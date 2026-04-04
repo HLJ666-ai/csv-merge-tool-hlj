@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV合并工具集 - 一站式解决方案</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 40px);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            opacity: 0.95;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        .content {
+            padding: 40px 30px;
+            flex: 1;
+        }
+
+        .home-view {
+            display: block;
+        }
+
+        .home-view.hidden {
+            display: none;
+        }
+
+        .tool-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .tool-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        }
+
+        .tool-card.highfreq {
+            border-color: #667eea;
+        }
+
+        .tool-card.highfreq:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .tool-card.question {
+            border-color: #11998e;
+        }
+
+        .tool-card.question:hover {
+            background: linear-gradient(135deg, rgba(17, 153, 142, 0.05) 0%, rgba(56, 239, 125, 0.05) 100%);
+        }
+
+        .tool-card.longtail {
+            border-color: #f5576c;
+        }
+
+        .tool-card.longtail:hover {
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.05) 0%, rgba(245, 87, 108, 0.05) 100%);
+        }
+
+        .tool-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .tool-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: #2c3e50;
+        }
+
+        .tool-card.highfreq h3 {
+            color: #667eea;
+        }
+
+        .tool-card.question h3 {
+            color: #11998e;
+        }
+
+        .tool-card.longtail h3 {
+            color: #f5576c;
+        }
+
+        .tool-card p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .tool-features {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .tool-features li {
+            color: #95a5a6;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .tool-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .tool-view {
+            display: none;
+        }
+
+        .tool-view.active {
+            display: block;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            border-radius: 16px;
+        }
+
+        .welcome-section h2 {
+            font-size: 1.8rem;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .welcome-section p {
+            color: #7f8c8d;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .info-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #856404;
+        }
+
+        .footer {
+            background: #f8f9fc;
+            border-top: 1px solid #e2e8f0;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .developer-name {
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.95rem;
+            }
+
+            .tool-cards {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .tool-card {
+                padding: 25px;
+            }
+
+            .tool-icon {
+                font-size: 48px;
+            }
+
+            .tool-card h3 {
+                font-size: 1.3rem;
+            }
+
+            .footer {
+                padding: 15px 20px;
+                font-size: 0.8rem;
+            }
+        }
+
+        .drop-zone {
+            border: 3px dashed #cbd5e0;
+            border-radius: 16px;
+            background: #f7fafc;
+            padding: 60px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone:hover {
+            border-color: #667eea;
+            background: #fef5e7;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #667eea;
+            background: #e6f7ff;
+            transform: scale(1.02);
+        }
+
+        .drop-zone-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .drop-zone-text {
+            font-size: 1.1rem;
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .drop-zone-hint {
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        .folder-info {
+            background: #e6f7ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .progress-container {
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background-color: #e2e8f0;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .progress-text {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+        }
+
+        .result-area {
+            margin-top: 20px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            resize: vertical;
+        }
+
+        .status {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .status.success {
+            background: #f0fdf4;
+            border-left-color: #48bb78;
+        }
+
+        .status.error {
+            background: #fed7d7;
+            border-left-color: #f56565;
+        }
+
+        .file-list {
+            max-height: 250px;
+            overflow-y: auto;
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+        }
+
+        .file-item {
+            padding: 8px 10px;
+            font-family: monospace;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-item:hover {
+            background: #eef2fa;
+        }
+
+        .file-name {
+            flex: 2;
+            word-break: break-all;
+        }
+
+        .file-size {
+            color: #718096;
+            font-size: 0.75rem;
+            width: 80px;
+            text-align: right;
+        }
+
+        .encoding-select {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f8f9fc;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .encoding-select label {
+            font-weight: 600;
+            color: #2c3e66;
+        }
+
+        select, input {
+            padding: 6px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .filter-row {
+            margin-top: 10px;
+            padding: 10px;
+            background: #eef2fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-row label {
+            font-weight: 600;
+            color: #2c3e66;
+        }
+
+        .filter-row input {
+            width: 80px;
+        }
+
+        .filter-row .filter-hint {
+            font-size: 0.8rem;
+            color: #718096;
+        }
+
+        .detail-stats {
+            background: #f8f9fc;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .detail-stats table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .detail-stats th {
+            text-align: left;
+            padding: 8px;
+            background: #e2e8f0;
+            position: sticky;
+            top: 0;
+        }
+
+        .detail-stats td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-stats .warning {
+            color: #f56565;
+            font-weight: bold;
+        }
+
+        .detail-stats .filtered-row {
+            background: #fff5e6;
+            font-size: 11px;
+            color: #f59e0b;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 15px;
+        }
+
+        .checkbox-group input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* 黑词过滤模块样式 */
+        .blacklist-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #fef5f5 0%, #fff0f0 100%);
+            border-radius: 12px;
+            border: 2px solid #f56565;
+        }
+
+        .blacklist-section h4 {
+            color: #f56565;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .blacklist-drop-zone {
+            border: 2px dashed #f56565;
+            border-radius: 12px;
+            background: #fff;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .blacklist-drop-zone:hover {
+            background: #fef5f5;
+            border-color: #e53e3e;
+        }
+
+        .blacklist-drop-zone.drag-over {
+            background: #fed7d7;
+            border-color: #c53030;
+            transform: scale(1.02);
+        }
+
+        .blacklist-info {
+            background: #fff5f5;
+            border-left: 4px solid #f56565;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            color: #742a2a;
+        }
+
+        .blacklist-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .blacklist-stat-item {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #fed7d7;
+            font-size: 0.9rem;
+        }
+
+        .blacklist-stat-item .number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #f56565;
+        }
+
+        .blacklist-stat-item .label {
+            color: #718096;
+            font-size: 0.8rem;
+        }
+
+        .blacklist-preview {
+            max-height: 150px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            border: 1px solid #fed7d7;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+        }
+
+        .blacklist-word {
+            display: inline-block;
+            background: #fed7d7;
+            color: #742a2a;
+            padding: 4px 10px;
+            border-radius: 15px;
+            margin: 3px;
+            font-size: 0.8rem;
+        }
+
+        .download-options {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .btn-filtered {
+            background: #f56565;
+        }
+
+        .btn-filtered:hover:not(:disabled) {
+            box-shadow: 0 5px 15px rgba(245, 101, 101, 0.4);
+        }
+
+        .btn-unfiltered {
+            background: #48bb78;
+        }
+
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 25px 0;
+        }
+
+        .filter-result-info {
+            background: #f0fff4;
+            border-left: 4px solid #48bb78;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .filter-result-info.filtered {
+            background: #fff5f5;
+            border-left-color: #f56565;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jschardet@3.0.0/dist/jschardet.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 CSV合并工具集</h1>
+            <p>一站式CSV文件处理解决方案</p>
+            <p class="subtitle">高频需求 | 疑问词 | 长尾词</p>
+        </div>
+
+        <div class="content">
+            <div id="homeView" class="home-view">
+                <div class="welcome-section">
+                    <h2>欢迎使用CSV合并工具集</h2>
+                    <p>选择下方的工具开始处理您的CSV文件，所有数据均在本地处理，安全可靠</p>
+                </div>
+
+                <div class="tool-cards">
+                    <div class="tool-card highfreq" onclick="showTool('highfreq')">
+                        <span class="tool-icon">🚀</span>
+                        <h3>高频需求合并</h3>
+                        <p>合并高频需求关键词CSV文件，支持智能列名拆分、长度筛选和黑词过滤</p>
+                        <ul class="tool-features">
+                            <li>智能拆分计划与单元列</li>
+                            <li>关键词长度筛选</li>
+                            <li>Excel/CSV黑词导入过滤</li>
+                            <li>过黑词/未过黑词双版本下载</li>
+                        </ul>
+                    </div>
+
+                    <div class="tool-card question" onclick="showTool('question')">
+                        <span class="tool-icon">❓</span>
+                        <h3>疑问词合并</h3>
+                        <p>合并疑问词相关CSV文件，支持黑词过滤和双版本下载</p>
+                        <ul class="tool-features">
+                            <li>疑问词智能识别</li>
+                            <li>批量文件处理</li>
+                            <li>Excel/CSV黑词导入过滤</li>
+                            <li>过黑词/未过黑词双版本下载</li>
+                        </ul>
+                    </div>
+
+                    <div class="tool-card longtail" onclick="showTool('longtail')">
+                        <span class="tool-icon">🎯</span>
+                        <h3>长尾词合并</h3>
+                        <p>合并长尾关键词CSV文件，支持大规模数据处理和黑词过滤</p>
+                        <ul class="tool-features">
+                            <li>长尾词智能提取</li>
+                            <li>高效批量合并</li>
+                            <li>Excel/CSV黑词导入过滤</li>
+                            <li>过黑词/未过黑词双版本下载</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 使用提示：</strong> 点击上方卡片选择对应的工具，支持拖拽文件夹或点击选择文件夹，所有处理均在浏览器本地完成，数据不会上传到服务器。
+                </div>
+            </div>
+
+            <div id="toolView" class="tool-view">
+                <button class="back-btn" onclick="showHome()">← 返回首页</button>
+                <div id="toolContent"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>© 2026 CSV合并工具集 | 开发者：<span class="developer-name">@hlj</span> | 数据完全本地处理，安全可靠</span>
+        </div>
+    </div>
+
+    <script>
+        let currentTool = null;
+        let toolInstances = {};
+
+        function showTool(toolType) {
+            document.getElementById('homeView').classList.add('hidden');
+            document.getElementById('toolView').classList.add('active');
+            
+            if (!toolInstances[toolType]) {
+                loadTool(toolType);
+            } else {
+                document.getElementById('toolContent').innerHTML = toolInstances[toolType];
+                initToolEvents(toolType);
+            }
+            currentTool = toolType;
+        }
+
+        function showHome() {
+            document.getElementById('homeView').classList.remove('hidden');
+            document.getElementById('toolView').classList.remove('active');
+            currentTool = null;
+        }
+
+        function loadTool(toolType) {
+            const toolHTML = getToolHTML(toolType);
+            toolInstances[toolType] = toolHTML;
+            document.getElementById('toolContent').innerHTML = toolHTML;
+            initToolEvents(toolType);
+        }
+
+        function getToolHTML(toolType) {
+            const configs = {
+                highfreq: {
+                    title: '📁 高频需求文件夹 CSV 合并工具',
+                    subtitle: '输出格式：计划 | 单元 | 关键词 | 支持长度筛选 | 大文件稳定下载',
+                    color: '#667eea',
+                    gradient: 'linear-gradient(90deg, #667eea, #764ba2)'
+                },
+                question: {
+                    title: '❓ 疑问词文件夹 CSV 合并工具',
+                    subtitle: '输出格式：疑问词 | 支持批量处理 | 智能去重',
+                    color: '#11998e',
+                    gradient: 'linear-gradient(90deg, #11998e, #38ef7d)'
+                },
+                longtail: {
+                    title: '🎯 长尾词文件夹 CSV 合并工具',
+                    subtitle: '输出格式：长尾词 | 大规模数据处理 | 高效合并',
+                    color: '#f5576c',
+                    gradient: 'linear-gradient(90deg, #f093fb, #f5576c)'
+                }
+            };
+
+            const config = configs[toolType];
+            
+            return `
+                <div style="margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, ${config.color}15 0%, ${config.color}25 100%); border-left: 4px solid ${config.color}; border-radius: 12px;">
+                    <h2 style="color: ${config.color}; margin-bottom: 8px;">${config.title}</h2>
+                    <p style="color: #666; font-size: 0.95rem;">${config.subtitle}</p>
+                </div>
+
+                <div id="dropZone" class="drop-zone">
+                    <div class="drop-zone-icon">📂</div>
+                    <div class="drop-zone-text">拖拽文件夹到此处，或点击选择文件夹</div>
+                    <div class="drop-zone-hint">支持包含大量CSV文件的文件夹（Chrome/Edge）</div>
+                </div>
+
+                <div class="encoding-select">
+                    <label>📝 编码设置：</label>
+                    <select id="encodingSelect">
+                        <option value="gbk" selected>GBK（中文Windows默认）</option>
+                        <option value="utf-8">UTF-8</option>
+                        <option value="auto">自动检测编码</option>
+                        <option value="gb2312">GB2312</option>
+                        <option value="big5">Big5（繁体中文）</option>
+                    </select>
+                    <label>⚠️ 跳过前几行：</label>
+                    <input type="number" id="skipRows" value="2" min="0" max="10" style="width: 70px;">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="keepEmpty" value="keepEmpty">
+                        <label>保留空值（默认过滤空关键词）</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="keepGarbled" value="keepGarbled">
+                        <label>保留乱码行（默认过滤包含 的行）</label>
+                    </div>
+                </div>
+
+                <div class="filter-row">
+                    <label>✂️ 关键词长度筛选：</label>
+                    <div>
+                        <input type="number" id="minLength" value="6" min="0" max="500" placeholder="最小">
+                        <span> ≤ 关键词长度 ≤ </span>
+                        <input type="number" id="maxLength" value="20" min="1" max="500" placeholder="最大">
+                        <span class="filter-hint">（只保留长度在范围内的关键词，超出会被过滤）</span>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="enableLengthFilter" checked>
+                        <label>启用长度筛选</label>
+                    </div>
+                </div>
+
+                <div id="folderInfo" style="display:none;" class="folder-info"></div>
+
+                <div id="fileListContainer" style="display:none;">
+                    <strong>📄 找到的 CSV 文件：</strong>
+                    <div id="fileList" class="file-list"></div>
+                </div>
+
+                <div id="progressContainer" class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill" style="background: ${config.gradient};">0%</div>
+                    </div>
+                    <div id="progressText" class="progress-text">准备就绪...</div>
+                </div>
+
+                <div id="status" style="display:none;" class="status"></div>
+
+                <div class="tab-buttons">
+                    <button id="tabSummary" class="tab-btn active">📊 汇总统计</button>
+                    <button id="tabDetail" class="tab-btn">📋 文件详情</button>
+                    <button id="tabFiltered" class="tab-btn">⚠️ 被过滤的数据</button>
+                </div>
+
+                <div id="summaryStats" class="tab-content active detail-stats"></div>
+                <div id="detailStats" class="tab-content detail-stats"></div>
+                <div id="filteredStats" class="tab-content detail-stats"></div>
+
+                <div class="button-group">
+                    <button id="mergeBtn" disabled style="background: ${config.color};">🔗 开始合并</button>
+                    <button id="clearBtn" class="btn-secondary">🗑️ 清空结果</button>
+                    <button id="downloadBtn" class="btn-secondary" disabled>💾 下载合并文件</button>
+                </div>
+
+                <div class="result-area">
+                    <div class="result-header">
+                        <strong>📊 合并结果预览（仅显示前100行）：</strong>
+                    </div>
+                    <textarea id="result" readonly placeholder="点击"开始合并"后显示结果..."></textarea>
+                </div>
+
+                <div class="section-divider"></div>
+
+                <!-- 黑词过滤模块 -->
+                <div class="blacklist-section">
+                    <h4>🚫 黑词过滤模块</h4>
+                    <p style="font-size: 0.85rem; color: #718096; margin-bottom: 15px;">导入包含黑词的Excel/CSV文件，系统将自动筛除包含黑词的关键词</p>
+                    
+                    <div id="blacklistDropZone" class="blacklist-drop-zone">
+                        <div style="font-size: 36px; margin-bottom: 10px;">📋</div>
+                        <div style="font-size: 1rem; color: #4a5568; margin-bottom: 8px;">导入黑词文件（Excel/CSV）</div>
+                        <div style="font-size: 0.85rem; color: #718096;">支持 .xlsx, .xls, .csv 格式</div>
+                    </div>
+
+                    <div id="blacklistInfo" style="display: none;" class="blacklist-info"></div>
+                    
+                    <div id="blacklistStats" style="display: none;" class="blacklist-stats">
+                        <div class="blacklist-stat-item">
+                            <div class="number" id="blacklistCount">0</div>
+                            <div class="label">黑词数量</div>
+                        </div>
+                        <div class="blacklist-stat-item">
+                            <div class="number" id="filteredCount">0</div>
+                            <div class="label">已过滤关键词</div>
+                        </div>
+                        <div class="blacklist-stat-item">
+                            <div class="number" id="remainingCount">0</div>
+                            <div class="label">剩余关键词</div>
+                        </div>
+                    </div>
+
+                    <div id="blacklistPreview" style="display: none;" class="blacklist-preview"></div>
+
+                    <div class="button-group" style="margin-top: 15px;">
+                        <button id="applyBlacklistBtn" disabled style="background: #f56565;">🚫 执行黑词过滤</button>
+                        <button id="clearBlacklistBtn" class="btn-secondary">🗑️ 清除黑词</button>
+                    </div>
+
+                    <div id="filterResultInfo" style="display: none;" class="filter-result-info"></div>
+
+                    <div id="blacklistFilteredSection" style="display: none; margin-top: 15px;" class="detail-stats">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <strong>🚫 被黑词过滤的关键词详情：</strong>
+                            <span style="font-size: 0.85rem; color: #718096;">（仅显示前500条）</span>
+                        </div>
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left; padding: 8px; background: #e2e8f0; position: sticky; top: 0;">序号</th>
+                                    <th style="text-align: left; padding: 8px; background: #e2e8f0; position: sticky; top: 0;">关键词内容</th>
+                                    <th style="text-align: left; padding: 8px; background: #e2e8f0; position: sticky; top: 0;">匹配的黑词</th>
+                                </tr>
+                            </thead>
+                            <tbody id="blacklistFilteredTable"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="download-options">
+                        <button id="downloadFilteredBtn" class="btn-filtered" disabled>💾 下载过黑词版（已过滤）</button>
+                        <button id="downloadUnfilteredBtn" class="btn-unfiltered" disabled>💾 下载未过黑词版（原始）</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function initToolEvents(toolType) {
+            let selectedFiles = [];
+            let mergedData = [];
+            let fileStats = [];
+            let filteredDataDetails = [];
+            let folderName = "";
+            let isProcessing = false;
+            
+            // 黑词相关变量
+            let blacklistWords = [];
+            let blacklistFileName = "";
+            let filteredData = [];
+            let isBlacklistApplied = false;
+
+            const dropZone = document.getElementById('dropZone');
+            const mergeBtn = document.getElementById('mergeBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resultTextarea = document.getElementById('result');
+            const folderInfoDiv = document.getElementById('folderInfo');
+            const fileListContainer = document.getElementById('fileListContainer');
+            const fileListDiv = document.getElementById('fileList');
+            const statusDiv = document.getElementById('status');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const encodingSelect = document.getElementById('encodingSelect');
+            const skipRowsInput = document.getElementById('skipRows');
+            const keepEmptyCheckbox = document.getElementById('keepEmpty');
+            const keepGarbledCheckbox = document.getElementById('keepGarbled');
+            const minLengthInput = document.getElementById('minLength');
+            const maxLengthInput = document.getElementById('maxLength');
+            const enableLengthFilterCheckbox = document.getElementById('enableLengthFilter');
+            const summaryStatsDiv = document.getElementById('summaryStats');
+            const detailStatsDiv = document.getElementById('detailStats');
+            const filteredStatsDiv = document.getElementById('filteredStats');
+
+            // 黑词模块DOM元素
+            const blacklistDropZone = document.getElementById('blacklistDropZone');
+            const blacklistInfo = document.getElementById('blacklistInfo');
+            const blacklistStats = document.getElementById('blacklistStats');
+            const blacklistPreview = document.getElementById('blacklistPreview');
+            const applyBlacklistBtn = document.getElementById('applyBlacklistBtn');
+            const clearBlacklistBtn = document.getElementById('clearBlacklistBtn');
+            const downloadFilteredBtn = document.getElementById('downloadFilteredBtn');
+            const downloadUnfilteredBtn = document.getElementById('downloadUnfilteredBtn');
+            const filterResultInfo = document.getElementById('filterResultInfo');
+
+            document.getElementById('tabSummary').addEventListener('click', () => setActiveTab('summary'));
+            document.getElementById('tabDetail').addEventListener('click', () => setActiveTab('detail'));
+            document.getElementById('tabFiltered').addEventListener('click', () => setActiveTab('filtered'));
+
+            function setActiveTab(tab) {
+                document.getElementById('tabSummary').classList.remove('active');
+                document.getElementById('tabDetail').classList.remove('active');
+                document.getElementById('tabFiltered').classList.remove('active');
+                summaryStatsDiv.classList.remove('active');
+                detailStatsDiv.classList.remove('active');
+                filteredStatsDiv.classList.remove('active');
+
+                if (tab === 'summary') {
+                    document.getElementById('tabSummary').classList.add('active');
+                    summaryStatsDiv.classList.add('active');
+                } else if (tab === 'detail') {
+                    document.getElementById('tabDetail').classList.add('active');
+                    detailStatsDiv.classList.add('active');
+                } else if (tab === 'filtered') {
+                    document.getElementById('tabFiltered').classList.add('active');
+                    filteredStatsDiv.classList.add('active');
+                }
+            }
+
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+
+            async function detectEncoding(file) {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const uint8Array = new Uint8Array(e.target.result);
+                        const detected = jschardet.detect(uint8Array);
+                        resolve(detected.encoding || 'gbk');
+                    };
+                    reader.onerror = function() { resolve('gbk'); };
+                    const blob = file.slice(0, 4096);
+                    reader.readAsArrayBuffer(blob);
+                });
+            }
+
+            function extractPlanFromFilename(filename) {
+                let plan = "";
+                let name = filename.replace('.csv', '');
+                if (name.includes('-')) {
+                    plan = name.split('-')[0].trim();
+                } else {
+                    plan = name;
+                }
+                return plan || "未命名";
+            }
+
+            function extractUnitFromFilename(filename) {
+                let unit = "";
+                let name = filename.replace('.csv', '');
+                if (name.includes('-')) {
+                    const parts = name.split('-');
+                    if (parts.length > 2) {
+                        unit = parts[1].trim();
+                    } else if (parts.length === 2) {
+                        let unitPart = parts[1].trim();
+                        unitPart = unitPart.replace(/[0-9_.\s]+/g, '');
+                        const commonSuffixes = ['高频词', '相关词', '列表', '关键词'];
+                        for (const suffix of commonSuffixes) {
+                            if (unitPart.endsWith(suffix)) {
+                                unitPart = unitPart.slice(0, -suffix.length);
+                            }
+                        }
+                        if (unitPart.includes('旅游') && unitPart.length > 2) {
+                            unit = '旅游';
+                        } else if (unitPart.length > 4) {
+                            unit = unitPart.slice(0, 2).trim();
+                        } else {
+                            unit = unitPart.trim();
+                        }
+                    }
+                }
+                return unit || filename.replace('.csv', '').slice(0, 4);
+            }
+
+            function checkKeywordLength(keyword, minLen, maxLen, enableFilter) {
+                if (!enableFilter) return true;
+                const len = keyword.length;
+                return len >= minLen && len <= maxLen;
+            }
+
+            function parseCSVAndExtractFirstColumn(file, planName, unitName, encoding, skipRows, keepEmpty, keepGarbled, minLen, maxLen, enableLengthFilter) {
+                return new Promise((resolve, reject) => {
+                    const extracted = [];
+                    const filteredRows = [];
+                    let rowIndex = 0;
+                    let totalRows = 0;
+                    let skippedRows = 0;
+                    let emptyRows = 0;
+                    let garbledRows = 0;
+                    let lengthFilteredRows = 0;
+
+                    Papa.parse(file, {
+                        header: false,
+                        skipEmptyLines: false,
+                        encoding: encoding,
+                        step: function(results, parser) {
+                            totalRows++;
+                            const row = results.data;
+
+                            if (rowIndex < skipRows) {
+                                skippedRows++;
+                            } else if (row && row.length > 0) {
+                                let keyword = row[0] ? String(row[0]).trim() : '';
+                                keyword = keyword.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
+
+                                let shouldKeep = true;
+                                let filterReason = '';
+
+                                if (!keyword || keyword.length === 0) {
+                                    shouldKeep = keepEmpty;
+                                    filterReason = '空值';
+                                    if (!keepEmpty) emptyRows++;
+                                } else if (keyword.includes(' ')) {
+                                    shouldKeep = keepGarbled;
+                                    filterReason = '乱码字符( )';
+                                    if (!keepGarbled) garbledRows++;
+                                } else if (enableLengthFilter) {
+                                    const keywordLen = keyword.length;
+                                    if (keywordLen < minLen) {
+                                        shouldKeep = false;
+                                        filterReason = `长度过短(${keywordLen} < ${minLen})`;
+                                        lengthFilteredRows++;
+                                    } else if (keywordLen > maxLen) {
+                                        shouldKeep = false;
+                                        filterReason = `长度过长(${keywordLen} > ${maxLen})`;
+                                        lengthFilteredRows++;
+                                    }
+                                }
+
+                                if (shouldKeep) {
+                                    extracted.push([planName, unitName, keyword]);
+                                } else {
+                                    filteredRows.push({
+                                        fileName: file.name,
+                                        rowNumber: rowIndex + 1,
+                                        content: keyword.length > 80 ? keyword.substring(0, 80) + '...' : keyword,
+                                        reason: filterReason
+                                    });
+                                }
+                            } else {
+                                if (!keepEmpty) emptyRows++;
+                                filteredRows.push({
+                                    fileName: file.name,
+                                    rowNumber: rowIndex + 1,
+                                    content: '(空行)',
+                                    reason: '空值'
+                                });
+                            }
+                            rowIndex++;
+
+                            if (rowIndex % 1000 === 0) {
+                                parser.pause();
+                                setTimeout(() => parser.resume(), 0);
+                            }
+                        },
+                        complete: function() {
+                            resolve({
+                                extracted: extracted,
+                                filteredRows: filteredRows,
+                                stats: {
+                                    totalRows: totalRows,
+                                    skippedRows: skippedRows,
+                                    extractedRows: extracted.length,
+                                    emptyRows: emptyRows,
+                                    garbledRows: garbledRows,
+                                    lengthFilteredRows: lengthFilteredRows,
+                                    filteredTotal: filteredRows.length,
+                                    fileName: file.name,
+                                    planName: planName,
+                                    unitName: unitName
+                                }
+                            });
+                        },
+                        error: function(error) { reject(error); }
+                    });
+                });
+            }
+
+            function getCommonWords(filenames) {
+                const prefixes = [];
+                for (const filename of filenames) {
+                    let name = filename.replace('.csv', '');
+                    if (name.includes('-')) {
+                        let prefix = name.split('-')[0].trim();
+                        prefixes.push(prefix);
+                    } else {
+                        prefixes.push(name);
+                    }
+                }
+                if (prefixes.length === 0) return "合并";
+                const allSame = prefixes.every(prefix => prefix === prefixes[0]);
+                return allSame ? prefixes[0] : (prefixes[0] || "合并");
+            }
+
+            async function handleFolderSelect() {
+                if (isProcessing) {
+                    showStatus('正在处理中，请稍后再试', 'error');
+                    return;
+                }
+
+                try {
+                    if ('showDirectoryPicker' in window) {
+                        const directoryHandle = await window.showDirectoryPicker();
+                        folderName = directoryHandle.name;
+
+                        const csvFiles = [];
+                        async function getCSVFiles(dirHandle, path = '') {
+                            for await (const entry of dirHandle.values()) {
+                                const entryPath = path ? `${path}/${entry.name}` : entry.name;
+                                if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.csv')) {
+                                    const file = await entry.getFile();
+                                    csvFiles.push({
+                                        file: file,
+                                        name: entry.name,
+                                        path: entryPath,
+                                        size: file.size,
+                                        sizeFormatted: formatFileSize(file.size)
+                                    });
+                                } else if (entry.kind === 'directory') {
+                                    await getCSVFiles(entry, entryPath);
+                                }
+                            }
+                        }
+
+                        showStatus('正在扫描文件夹...', '');
+                        await getCSVFiles(directoryHandle);
+                        selectedFiles = csvFiles;
+
+                        if (selectedFiles.length === 0) {
+                            showStatus('没有找到 CSV 文件', 'error');
+                            mergeBtn.disabled = true;
+                            return;
+                        }
+
+                        const totalSize = selectedFiles.reduce((sum, f) => sum + f.size, 0);
+                        folderInfoDiv.style.display = 'block';
+                        folderInfoDiv.innerHTML = `
+                            <strong>📁 已选择文件夹：</strong> ${folderName}<br>
+                            <strong>📊 找到 ${selectedFiles.length} 个 CSV 文件（包含子文件夹）</strong><br>
+                            <strong>💾 总大小：</strong> ${formatFileSize(totalSize)}
+                        `;
+
+                        fileListContainer.style.display = 'block';
+                        fileListDiv.innerHTML = selectedFiles.map(f => 
+                            `<div class="file-item">
+                                <span class="file-name">📄 ${f.path || f.name}</span>
+                                <span class="file-size">${f.sizeFormatted}</span>
+                            </div>`
+                        ).join('');
+
+                        showStatus(`成功加载 ${selectedFiles.length} 个 CSV 文件，总大小 ${formatFileSize(totalSize)}，点击"开始合并"进行处理`, 'success');
+                        mergeBtn.disabled = false;
+
+                    } else {
+                        showStatus('当前浏览器不支持文件夹选择功能，请使用 Chrome 或 Edge 浏览器', 'error');
+                    }
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        showStatus('选择文件夹失败: ' + error.message, 'error');
+                    }
+                }
+            }
+
+            function showStatus(message, type) {
+                statusDiv.style.display = 'block';
+                statusDiv.textContent = message;
+                statusDiv.className = 'status ' + type;
+            }
+
+            function displayStats(commonWords, skipRows, keepEmpty, keepGarbled, enableLengthFilter, minLen, maxLen) {
+                const totalExtracted = fileStats.reduce((sum, s) => sum + (s.extractedRows || 0), 0);
+                const totalRows = fileStats.reduce((sum, s) => sum + (s.totalRows || 0), 0);
+                const totalSkipped = fileStats.reduce((sum, s) => sum + (s.skippedRows || 0), 0);
+                const totalEmpty = fileStats.reduce((sum, s) => sum + (s.emptyRows || 0), 0);
+                const totalGarbled = fileStats.reduce((sum, s) => sum + (s.garbledRows || 0), 0);
+                const totalLengthFiltered = fileStats.reduce((sum, s) => sum + (s.lengthFilteredRows || 0), 0);
+                const errorFiles = fileStats.filter(s => s.error);
+
+                const expectedAfterSkip = totalRows - totalSkipped;
+                const actualExtracted = totalExtracted;
+
+                summaryStatsDiv.innerHTML = `
+                    <table style="width: 100%">
+                        <thead><tr><th>统计项</th><th>数值</th></tr></thead>
+                        <tbody>
+                            <tr><td>📊 处理的 CSV 文件数</td><td><strong>${fileStats.length}</strong></td></tr>
+                            <tr><td>📝 CSV 文件总行数</td><td><strong>${totalRows.toLocaleString()}</strong> 行</td></tr>
+                            <tr><td>⏭️ 跳过的行数（前 ${skipRows} 行）</td><td><strong>${totalSkipped.toLocaleString()}</strong> 行</td></tr>
+                            <tr><td>📊 跳过后的应得行数</td><td><strong>${expectedAfterSkip.toLocaleString()}</strong> 行</td></tr>
+                            <tr style="background: #fff5e6"><td>⚠️ 被过滤的空值行</td><td class="warning"><strong>${totalEmpty.toLocaleString()}</strong> 行 ${keepEmpty ? '(已选择保留)' : '(已过滤)'}</td></tr>
+                            <tr style="background: #fff5e6"><td>⚠️ 被过滤的乱码行</td><td class="warning"><strong>${totalGarbled.toLocaleString()}</strong> 行 ${keepGarbled ? '(已选择保留)' : '(已过滤)'}</td></tr>
+                            ${enableLengthFilter ? `<tr style="background: #fff5e6"><td>✂️ 被过滤的长度不符行（${minLen}~${maxLen}字符）</td><td class="warning"><strong>${totalLengthFiltered.toLocaleString()}</strong> 行</td></tr>` : ''}
+                            <tr><td>✅ 实际提取的关键词数</td><td><strong style="color: #48bb78;">${actualExtracted.toLocaleString()}</strong> 条</td></tr>
+                            <tr><td>📉 提取率</td><td><strong>${expectedAfterSkip > 0 ? ((actualExtracted / expectedAfterSkip) * 100).toFixed(2) : 0}%</strong></td></tr>
+                            ${errorFiles.length > 0 ? `<tr style="background: #fee2e2"><td>⚠️ 解析失败的文件</td><td class="warning">${errorFiles.length} 个</td>` : ''}
+                        </tbody>
+                    </table>
+                    <div style="margin-top: 15px; padding: 10px; background: #eef2fa; border-radius: 8px;">
+                        <strong>💡 核对说明：</strong><br>
+                        应得行数 = 总行数 - 跳过行数<br>
+                        实际提取 = 应得行数 - 空值行 - 乱码行 ${enableLengthFilter ? '- 长度不符行' : ''}<br>
+                        ${enableLengthFilter ? `<span style="color: #f59e0b;">✂️ 当前长度筛选范围：${minLen} ~ ${maxLen} 个字符</span><br>` : ''}
+                    </div>
+                `;
+
+                let detailHtml = '<table><thead><tr><th>文件名</th><th>计划</th><th>单元</th><th>总行数</th><th>跳过</th><th>空值</th><th>乱码</th><th>长度过滤</th><th>提取</th></tr></thead><tbody>';
+                for (const stat of fileStats) {
+                    detailHtml += `<tr>
+                        <td>${escapeHtml(stat.fileName)}</td>
+                        <td>${escapeHtml(stat.planName)}</td>
+                        <td>${escapeHtml(stat.unitName)}</td>
+                        <td>${formatNumber(stat.totalRows)}</td>
+                        <td>${formatNumber(stat.skippedRows)}</td>
+                        <td>${formatNumber(stat.emptyRows)}</td>
+                        <td>${formatNumber(stat.garbledRows)}</td>
+                        <td>${formatNumber(stat.lengthFilteredRows)}</td>
+                        <td><strong>${formatNumber(stat.extractedRows)}</strong></td>
+                    </tr>`;
+                }
+                detailHtml += '</tbody></table>';
+                detailStatsDiv.innerHTML = detailHtml;
+
+                if (filteredDataDetails.length > 0) {
+                    let filteredHtml = '<table><thead><tr><th>文件名</th><th>行号</th><th>内容</th><th>过滤原因</th></tr></thead><tbody>';
+                    for (const item of filteredDataDetails.slice(0, 500)) {
+                        filteredHtml += `<tr class="filtered-row">
+                            <td>${escapeHtml(item.fileName)}</td>
+                            <td>${item.rowNumber}</td>
+                            <td>${escapeHtml(item.content)}</td>
+                            <td>${item.reason}</td>
+                        </tr>`;
+                    }
+                    if (filteredDataDetails.length > 500) {
+                        filteredHtml += `<tr><td colspan="4" style="text-align: center; color: #f59e0b;">... 还有 ${filteredDataDetails.length - 500} 行被过滤的数据未显示</td></tr>`;
+                    }
+                    filteredHtml += '</tbody></table>';
+                    filteredStatsDiv.innerHTML = filteredHtml;
+                } else {
+                    filteredStatsDiv.innerHTML = '<p style="text-align: center; color: #718096;">没有被过滤的数据</p>';
+                }
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function formatNumber(num) {
+                if (num === undefined || num === null) return '-';
+                if (typeof num === 'number') {
+                    return num.toLocaleString();
+                }
+                return String(num);
+            }
+
+            async function mergeCSVFiles() {
+                if (selectedFiles.length === 0) {
+                    showStatus('请先选择文件夹', 'error');
+                    return;
+                }
+
+                if (isProcessing) {
+                    showStatus('正在处理中，请稍候...', 'error');
+                    return;
+                }
+
+                isProcessing = true;
+                mergeBtn.disabled = true;
+                mergeBtn.textContent = '⏳ 处理中...';
+                progressContainer.style.display = 'block';
+
+                try {
+                    const allExtractedData = [];
+                    fileStats = [];
+                    filteredDataDetails = [];
+                    const filenames = selectedFiles.map(f => f.name);
+                    const commonWords = getCommonWords(filenames);
+                    let selectedEncoding = encodingSelect.value;
+                    const skipRows = parseInt(skipRowsInput.value) || 2;
+                    const keepEmpty = keepEmptyCheckbox.checked;
+                    const keepGarbled = keepGarbledCheckbox.checked;
+                    const enableLengthFilter = enableLengthFilterCheckbox.checked;
+                    const minLen = parseInt(minLengthInput.value) || 1;
+                    const maxLen = parseInt(maxLengthInput.value) || 100;
+
+                    for (let i = 0; i < selectedFiles.length; i++) {
+                        const { file, name, size } = selectedFiles[i];
+                        const planName = extractPlanFromFilename(name);
+                        const unitName = extractUnitFromFilename(name);
+
+                        const percent = Math.round((i / selectedFiles.length) * 100);
+                        progressFill.style.width = `${percent}%`;
+                        progressFill.textContent = `${percent}%`;
+                        progressText.innerHTML = `正在处理: ${name} (${i + 1}/${selectedFiles.length})<br>文件大小: ${formatFileSize(size)}`;
+
+                        try {
+                            let encoding = selectedEncoding;
+                            if (selectedEncoding === 'auto') {
+                                encoding = await detectEncoding(file);
+                            }
+
+                            const result = await parseCSVAndExtractFirstColumn(file, planName, unitName, encoding, skipRows, keepEmpty, keepGarbled, minLen, maxLen, enableLengthFilter);
+                            for (let j = 0; j < result.extracted.length; j++) {
+                                allExtractedData.push(result.extracted[j]);
+                            }
+                            fileStats.push(result.stats);
+                            for (let j = 0; j < result.filteredRows.length; j++) {
+                                filteredDataDetails.push(result.filteredRows[j]);
+                            }
+
+                            showStatus(`${name}: 总行数 ${result.stats.totalRows}, 跳过 ${result.stats.skippedRows} 行, 空值 ${result.stats.emptyRows} 行, 乱码 ${result.stats.garbledRows} 行, 长度过滤 ${result.stats.lengthFilteredRows} 行, 提取 ${result.stats.extractedRows} 条`, '');
+                        } catch (err) {
+                            console.error(`处理文件 ${name} 失败:`, err);
+                            fileStats.push({
+                                fileName: name,
+                                planName: planName,
+                                unitName: unitName,
+                                totalRows: 0,
+                                skippedRows: 0,
+                                extractedRows: 0,
+                                emptyRows: 0,
+                                garbledRows: 0,
+                                lengthFilteredRows: 0,
+                                filteredTotal: 0,
+                                error: err.message
+                            });
+                            showStatus(`文件 ${name} 解析失败: ${err.message}`, 'error');
+                        }
+                    }
+
+                    mergedData = allExtractedData;
+
+                    displayStats(commonWords, skipRows, keepEmpty, keepGarbled, enableLengthFilter, minLen, maxLen);
+
+                    progressFill.style.width = `100%`;
+                    progressFill.textContent = `100%`;
+                    progressText.innerHTML = `处理完成！共提取 ${mergedData.length} 条关键词`;
+
+                    if (mergedData.length > 0) {
+                        const previewLines = ['计划,单元,关键词'];
+                        const previewCount = Math.min(100, mergedData.length);
+                        for (let i = 0; i < previewCount; i++) {
+                            const row = mergedData[i];
+                            const plan = String(row[0] || '').replace(/,/g, '');
+                            const unit = String(row[1] || '').replace(/,/g, '');
+                            const keyword = String(row[2] || '').replace(/,/g, '');
+                            previewLines.push(plan + ',' + unit + ',' + keyword);
+                        }
+                        const previewText = previewLines.join('\n');
+                        resultTextarea.value = previewText + (mergedData.length > 100 ? '\n\n... 还有 ' + (mergedData.length - 100) + ' 行数据未显示' : '');
+
+                        showStatus(`成功合并 ${mergedData.length} 条关键词数据`, 'success');
+                        downloadBtn.disabled = false;
+                    } else {
+                        resultTextarea.value = '没有提取到任何数据，请检查 CSV 文件格式或调整筛选条件';
+                        showStatus('没有提取到任何数据，请检查 CSV 文件格式或调整筛选条件', 'error');
+                    }
+
+                } catch (error) {
+                    showStatus('合并过程中出错: ' + error.message, 'error');
+                    console.error(error);
+                } finally {
+                    isProcessing = false;
+                    mergeBtn.disabled = false;
+                    mergeBtn.textContent = '🔗 开始合并';
+                    setTimeout(() => {
+                        progressContainer.style.display = 'none';
+                    }, 3000);
+                }
+            }
+
+            function downloadCSV() {
+                if (mergedData.length === 0) {
+                    showStatus('没有可下载的数据', 'error');
+                    return;
+                }
+
+                const headers = ['计划', '单元', '关键词'];
+                const csvContent = [headers.join(','), ...mergedData.map(row => row.join(','))].join('\n');
+
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `${folderName || '合并结果'}_${toolType}_关键词.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showStatus('文件已开始下载', 'success');
+            }
+
+            function clearResults() {
+                selectedFiles = [];
+                mergedData = [];
+                fileStats = [];
+                filteredDataDetails = [];
+                folderName = "";
+                resultTextarea.value = '';
+                folderInfoDiv.style.display = 'none';
+                fileListContainer.style.display = 'none';
+                fileListDiv.innerHTML = '';
+                statusDiv.style.display = 'none';
+                summaryStatsDiv.innerHTML = '';
+                detailStatsDiv.innerHTML = '';
+                filteredStatsDiv.innerHTML = '';
+                mergeBtn.disabled = true;
+                downloadBtn.disabled = true;
+                
+                // 清空黑词相关数据
+                clearBlacklistData();
+                
+                showStatus('结果已清空', 'success');
+            }
+
+            // 清空黑词数据
+            function clearBlacklistData() {
+                blacklistWords = [];
+                blacklistFileName = "";
+                filteredData = [];
+                isBlacklistApplied = false;
+                
+                blacklistInfo.style.display = 'none';
+                blacklistStats.style.display = 'none';
+                blacklistPreview.style.display = 'none';
+                filterResultInfo.style.display = 'none';
+                const blacklistFilteredSection = document.getElementById('blacklistFilteredSection');
+                if (blacklistFilteredSection) {
+                    blacklistFilteredSection.style.display = 'none';
+                }
+                applyBlacklistBtn.disabled = true;
+                downloadFilteredBtn.disabled = true;
+                downloadUnfilteredBtn.disabled = true;
+            }
+
+            // 处理黑词文件导入
+            async function handleBlacklistImport() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.xlsx,.xls,.csv';
+                input.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    await processBlacklistFile(file);
+                };
+                input.click();
+            }
+
+            // 处理黑词文件
+            async function processBlacklistFile(file) {
+                try {
+                    blacklistFileName = file.name;
+                    const extension = file.name.split('.').pop().toLowerCase();
+                    
+                    showStatus('正在读取黑词文件...', '');
+                    
+                    if (extension === 'csv') {
+                        await parseBlacklistCSV(file);
+                    } else {
+                        await parseBlacklistExcel(file);
+                    }
+                    
+                    updateBlacklistUI();
+                    showStatus(`成功导入 ${blacklistWords.length} 个黑词`, 'success');
+                    
+                    // 如果有合并数据，启用过滤按钮
+                    if (mergedData.length > 0) {
+                        applyBlacklistBtn.disabled = false;
+                    }
+                } catch (error) {
+                    showStatus('黑词文件解析失败: ' + error.message, 'error');
+                    console.error(error);
+                }
+            }
+
+            // 解析CSV黑词文件
+            async function parseBlacklistCSV(file) {
+                return new Promise((resolve, reject) => {
+                    Papa.parse(file, {
+                        header: false,
+                        skipEmptyLines: true,
+                        encoding: 'gbk',
+                        complete: function(results) {
+                            const words = new Set();
+                            results.data.forEach(row => {
+                                if (row && row.length > 0) {
+                                    row.forEach(cell => {
+                                        if (cell) {
+                                            const word = String(cell).trim();
+                                            if (word) words.add(word);
+                                        }
+                                    });
+                                }
+                            });
+                            blacklistWords = Array.from(words);
+                            resolve();
+                        },
+                        error: reject
+                    });
+                });
+            }
+
+            // 解析Excel黑词文件
+            async function parseBlacklistExcel(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                            
+                            const words = new Set();
+                            jsonData.forEach(row => {
+                                if (row && row.length > 0) {
+                                    row.forEach(cell => {
+                                        if (cell) {
+                                            const word = String(cell).trim();
+                                            if (word) words.add(word);
+                                        }
+                                    });
+                                }
+                            });
+                            blacklistWords = Array.from(words);
+                            resolve();
+                        } catch (error) {
+                            reject(error);
+                        }
+                    };
+                    reader.onerror = reject;
+                    reader.readAsArrayBuffer(file);
+                });
+            }
+
+            // 更新黑词UI显示
+            function updateBlacklistUI() {
+                blacklistInfo.style.display = 'block';
+                blacklistInfo.innerHTML = `
+                    <strong>📋 已导入黑词文件：</strong> ${blacklistFileName}<br>
+                    <strong>🚫 黑词数量：</strong> ${blacklistWords.length} 个
+                `;
+                
+                blacklistStats.style.display = 'flex';
+                document.getElementById('blacklistCount').textContent = blacklistWords.length;
+                document.getElementById('filteredCount').textContent = isBlacklistApplied ? filteredData.length : 0;
+                document.getElementById('remainingCount').textContent = isBlacklistApplied ? (mergedData.length - filteredData.length) : mergedData.length;
+                
+                // 显示黑词预览（最多显示50个）
+                blacklistPreview.style.display = 'block';
+                const previewWords = blacklistWords.slice(0, 50);
+                let previewHtml = previewWords.map(word => `<span class="blacklist-word">${escapeHtml(word)}</span>`).join('');
+                if (blacklistWords.length > 50) {
+                    previewHtml += `<span style="color: #718096; margin-left: 10px;">...还有 ${blacklistWords.length - 50} 个黑词</span>`;
+                }
+                blacklistPreview.innerHTML = previewHtml;
+            }
+
+            // 执行黑词过滤
+            function applyBlacklistFilter() {
+                if (blacklistWords.length === 0) {
+                    showStatus('请先导入黑词文件', 'error');
+                    return;
+                }
+                if (mergedData.length === 0) {
+                    showStatus('请先合并CSV文件', 'error');
+                    return;
+                }
+                
+                filteredData = [];
+                const keywordIndex = toolType === 'highfreq' ? 2 : 0; // 高频需求在第3列，其他在第1列
+                
+                mergedData.forEach((row, index) => {
+                    const keyword = String(row[keywordIndex] || '').toLowerCase();
+                    let isBlacklisted = false;
+                    
+                    for (const word of blacklistWords) {
+                        if (keyword.includes(word.toLowerCase())) {
+                            isBlacklisted = true;
+                            filteredData.push({
+                                rowIndex: index,
+                                row: row,
+                                matchedWord: word
+                            });
+                            break;
+                        }
+                    }
+                });
+                
+                isBlacklistApplied = true;
+                updateBlacklistUI();
+                
+                // 显示过滤结果
+                filterResultInfo.style.display = 'block';
+                filterResultInfo.className = 'filter-result-info filtered';
+                filterResultInfo.innerHTML = `
+                    <strong>🚫 黑词过滤完成</strong><br>
+                    原始关键词数量：<strong>${mergedData.length.toLocaleString()}</strong> 条<br>
+                    包含黑词已过滤：<strong style="color: #f56565;">${filteredData.length.toLocaleString()}</strong> 条<br>
+                    过滤后剩余：<strong style="color: #48bb78;">${(mergedData.length - filteredData.length).toLocaleString()}</strong> 条<br>
+                    过滤率：<strong>${((filteredData.length / mergedData.length) * 100).toFixed(2)}%</strong>
+                `;
+                
+                // 更新黑词过滤表格
+                updateBlacklistFilteredTable();
+                
+                downloadFilteredBtn.disabled = false;
+                downloadUnfilteredBtn.disabled = false;
+                
+                showStatus(`黑词过滤完成！已过滤 ${filteredData.length} 条关键词`, 'success');
+            }
+
+            // 更新黑词过滤表格
+            function updateBlacklistFilteredTable() {
+                const blacklistFilteredSection = document.getElementById('blacklistFilteredSection');
+                const blacklistFilteredTable = document.getElementById('blacklistFilteredTable');
+                
+                if (filteredData.length === 0) {
+                    blacklistFilteredSection.style.display = 'none';
+                    return;
+                }
+                
+                blacklistFilteredSection.style.display = 'block';
+                
+                let tableHtml = '';
+                const displayCount = Math.min(500, filteredData.length);
+                
+                for (let i = 0; i < displayCount; i++) {
+                    const item = filteredData[i];
+                    const keywordIndex = toolType === 'highfreq' ? 2 : 0;
+                    const keyword = item.row[keywordIndex] || '';
+                    const rowClass = 'filtered-row';
+                    
+                    tableHtml += `<tr class="${rowClass}">
+                        <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0;">${item.rowIndex + 1}</td>
+                        <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0;">${escapeHtml(String(keyword))}</td>
+                        <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #f56565; font-weight: bold;">${escapeHtml(item.matchedWord)}</td>
+                    </tr>`;
+                }
+                
+                if (filteredData.length > 500) {
+                    tableHtml += `<tr><td colspan="3" style="text-align: center; color: #f59e0b; padding: 10px; border-bottom: 1px solid #e2e8f0;">... 还有 ${filteredData.length - 500} 条被黑词过滤的数据未显示</td></tr>`;
+                }
+                
+                blacklistFilteredTable.innerHTML = tableHtml;
+            }
+
+            // 下载过黑词版（已过滤）
+            function downloadFilteredCSV() {
+                if (!isBlacklistApplied || mergedData.length === 0) {
+                    showStatus('没有可下载的数据', 'error');
+                    return;
+                }
+                
+                const keywordIndex = toolType === 'highfreq' ? 2 : 0;
+                const filteredOutIndices = new Set(filteredData.map(item => item.rowIndex));
+                const remainingData = mergedData.filter((_, index) => !filteredOutIndices.has(index));
+                
+                if (remainingData.length === 0) {
+                    showStatus('过滤后没有剩余数据', 'error');
+                    return;
+                }
+                
+                let csvContent;
+                if (toolType === 'highfreq') {
+                    csvContent = ['计划,单元,关键词', ...remainingData.map(row => row.join(','))].join('\n');
+                } else {
+                    csvContent = ['关键词', ...remainingData.map(row => row[0])].join('\n');
+                }
+                
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `${folderName || '合并结果'}_${toolType}_过黑词版.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showStatus('过黑词版文件已开始下载', 'success');
+            }
+
+            // 下载未过黑词版（原始）
+            function downloadUnfilteredCSV() {
+                if (mergedData.length === 0) {
+                    showStatus('没有可下载的数据', 'error');
+                    return;
+                }
+                
+                let csvContent;
+                if (toolType === 'highfreq') {
+                    csvContent = ['计划,单元,关键词', ...mergedData.map(row => row.join(','))].join('\n');
+                } else {
+                    csvContent = ['关键词', ...mergedData.map(row => row[0])].join('\n');
+                }
+                
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `${folderName || '合并结果'}_${toolType}_未过黑词版.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showStatus('未过黑词版文件已开始下载', 'success');
+            }
+
+            dropZone.addEventListener('click', handleFolderSelect);
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-over');
+            });
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                handleFolderSelect();
+            });
+
+            mergeBtn.addEventListener('click', mergeCSVFiles);
+            clearBtn.addEventListener('click', clearResults);
+            downloadBtn.addEventListener('click', downloadCSV);
+
+            // 黑词模块事件监听
+            blacklistDropZone.addEventListener('click', handleBlacklistImport);
+            blacklistDropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                blacklistDropZone.classList.add('drag-over');
+            });
+            blacklistDropZone.addEventListener('dragleave', () => {
+                blacklistDropZone.classList.remove('drag-over');
+            });
+            blacklistDropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                blacklistDropZone.classList.remove('drag-over');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    const extension = file.name.split('.').pop().toLowerCase();
+                    if (['xlsx', 'xls', 'csv'].includes(extension)) {
+                        processBlacklistFile(file);
+                    } else {
+                        showStatus('请上传 Excel 或 CSV 格式的文件', 'error');
+                    }
+                }
+            });
+
+            applyBlacklistBtn.addEventListener('click', applyBlacklistFilter);
+            clearBlacklistBtn.addEventListener('click', () => {
+                clearBlacklistData();
+                showStatus('黑词已清除', 'success');
+            });
+            downloadFilteredBtn.addEventListener('click', downloadFilteredCSV);
+            downloadUnfilteredBtn.addEventListener('click', downloadUnfilteredCSV);
+        }
+    </script>
+</body>
+</html>
