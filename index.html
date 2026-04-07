@@ -776,7 +776,7 @@
         }
 
         .detail-stats {
-            background: rgba(30, 30, 50, 0.6);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: var(--radius-md);
             padding: 20px;
             margin-bottom: 20px;
@@ -785,6 +785,7 @@
             font-family: 'Space Mono', monospace;
             font-size: 13px;
             border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
         }
 
         .detail-stats table {
@@ -795,17 +796,16 @@
         .detail-stats th {
             text-align: left;
             padding: 12px 10px;
-            background: linear-gradient(135deg, rgba(255,107,107,0.15) 0%, rgba(168,85,247,0.15) 100%);
-            position: sticky;
-            top: 0;
+            background: linear-gradient(135deg, rgba(255,107,107,0.1) 0%, rgba(168,85,247,0.1) 100%);
             font-weight: 600;
             color: var(--text-primary);
+            border-bottom: 2px solid var(--border-color);
         }
 
         .detail-stats td {
             padding: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
         }
 
         .detail-stats .warning {
@@ -1380,6 +1380,13 @@
             const summaryStatsDiv = document.getElementById('summaryStats');
             const detailStatsDiv = document.getElementById('detailStats');
             const filteredStatsDiv = document.getElementById('filteredStats');
+            
+            // 根据工具类型设置默认跳过行数
+            if (toolType === 'question') {
+                skipRowsInput.value = 1; // 疑问词默认跳过第一行
+            } else {
+                skipRowsInput.value = 2; // 其他类型默认跳过前2行
+            }
 
             // 黑词模块DOM元素
             const blacklistDropZone = document.getElementById('blacklistDropZone');
@@ -1441,7 +1448,11 @@
             function extractPlanFromFilename(filename) {
                 let plan = "";
                 let name = filename.replace('.csv', '');
-                if (name.includes('-')) {
+                
+                // 疑问词类型特殊处理：按空格分割
+                if (currentTool === 'question' && name.includes(' ')) {
+                    plan = name.split(' ')[0].trim();
+                } else if (name.includes('-')) {
                     plan = name.split('-')[0].trim();
                 } else {
                     plan = name;
@@ -1452,7 +1463,14 @@
             function extractUnitFromFilename(filename) {
                 let unit = "";
                 let name = filename.replace('.csv', '');
-                if (name.includes('-')) {
+                
+                // 疑问词类型特殊处理：按空格分割
+                if (currentTool === 'question' && name.includes(' ')) {
+                    const parts = name.split(' ');
+                    if (parts.length > 1) {
+                        unit = parts.slice(1).join(' ').trim();
+                    }
+                } else if (name.includes('-')) {
                     const parts = name.split('-');
                     if (parts.length > 2) {
                         unit = parts[1].trim();
@@ -1728,15 +1746,15 @@
                 if (filteredDataDetails.length > 0) {
                     let filteredHtml = '<table><thead><tr><th>文件名</th><th>行号</th><th>内容</th><th>过滤原因</th></tr></thead><tbody>';
                     for (const item of filteredDataDetails.slice(0, 500)) {
-                        filteredHtml += `<tr class="filtered-row">
+                        filteredHtml += `<tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;">
                             <td>${escapeHtml(item.fileName)}</td>
                             <td>${item.rowNumber}</td>
                             <td>${escapeHtml(item.content)}</td>
-                            <td>${item.reason}</td>
+                            <td style="color: #6b7280;">${item.reason}</td>
                         </tr>`;
                     }
                     if (filteredDataDetails.length > 500) {
-                        filteredHtml += `<tr><td colspan="4" style="text-align: center; color: #f59e0b;">... 还有 ${filteredDataDetails.length - 500} 行被过滤的数据未显示</td></tr>`;
+                        filteredHtml += `<tr><td colspan="4" style="text-align: center; color: #6b7280;">... 还有 ${filteredDataDetails.length - 500} 行被过滤的数据未显示</td></tr>`;
                     }
                     filteredHtml += '</tbody></table>';
                     filteredStatsDiv.innerHTML = filteredHtml;
@@ -2077,7 +2095,7 @@
                 }
                 
                 filteredData = [];
-                const keywordIndex = toolType === 'highfreq' ? 2 : 0; // 高频需求在第3列，其他在第1列
+                const keywordIndex = 2; // 所有工具类型的关键词都在第3列
                 
                 mergedData.forEach((row, index) => {
                     const keyword = String(row[keywordIndex] || '').toLowerCase();
@@ -2136,7 +2154,7 @@
                 
                 for (let i = 0; i < displayCount; i++) {
                     const item = filteredData[i];
-                    const keywordIndex = toolType === 'highfreq' ? 2 : 0;
+                    const keywordIndex = 2; // 所有工具类型的关键词都在第3列
                     const keyword = item.row[keywordIndex] || '';
                     const rowClass = 'filtered-row';
                     
@@ -2161,7 +2179,7 @@
                     return;
                 }
                 
-                const keywordIndex = toolType === 'highfreq' ? 2 : 0;
+                const keywordIndex = 2; // 所有工具类型的关键词都在第3列
                 const filteredOutIndices = new Set(filteredData.map(item => item.rowIndex));
                 const remainingData = mergedData.filter((_, index) => !filteredOutIndices.has(index));
                 
@@ -2174,7 +2192,7 @@
                 if (toolType === 'highfreq') {
                     csvContent = ['计划,单元,关键词', ...remainingData.map(row => row.join(','))].join('\n');
                 } else {
-                    csvContent = ['关键词', ...remainingData.map(row => row[0])].join('\n');
+                    csvContent = ['关键词', ...remainingData.map(row => row[2])].join('\n');
                 }
                 
                 const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -2200,7 +2218,7 @@
                 if (toolType === 'highfreq') {
                     csvContent = ['计划,单元,关键词', ...mergedData.map(row => row.join(','))].join('\n');
                 } else {
-                    csvContent = ['关键词', ...mergedData.map(row => row[0])].join('\n');
+                    csvContent = ['关键词', ...mergedData.map(row => row[2])].join('\n');
                 }
                 
                 const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
