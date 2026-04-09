@@ -1395,7 +1395,80 @@
             
             function extractPlanFromFilename(filename) { let plan = ""; let name = filename.replace('.csv', ''); if (toolType === 'question' && name.includes(' ')) { plan = name.split(' ')[0].trim(); } else if (name.includes('-')) { plan = name.split('-')[0].trim(); } else { plan = name; } return plan || "未命名"; }
             
-            function extractUnitFromFilename(filename) { let unit = ""; let name = filename.replace('.csv', ''); if (toolType === 'question' && name.includes(' ')) { const parts = name.split(' '); if (parts.length > 1) { unit = parts.slice(1).join(' ').trim(); } } else if (name.includes('-')) { const parts = name.split('-'); if (parts.length > 2) { unit = parts[1].trim(); } else if (parts.length === 2) { let unitPart = parts[1].trim(); unitPart = unitPart.replace(/[0-9_.\s]+/g, ''); const commonSuffixes = ['高频词', '相关词', '列表', '关键词']; for (const suffix of commonSuffixes) { if (unitPart.endsWith(suffix)) { unitPart = unitPart.slice(0, -suffix.length); } } if (unitPart.includes('旅游') && unitPart.length > 2) { unit = '旅游'; } else if (unitPart.length > 4) { unit = unitPart.slice(0, 2).trim(); } else { unit = unitPart.trim(); } } } return unit || filename.replace('.csv', '').slice(0, 4); }
+            // ==================== 核心修改：高频需求合并的单元列提取逻辑 ====================
+            function extractUnitFromFilename(filename) {
+                // 疑问词和长尾词工具保持原有逻辑（不做任何改动）
+                if (toolType !== 'highfreq') {
+                    let unit = "";
+                    let name = filename.replace('.csv', '');
+                    if (toolType === 'question' && name.includes(' ')) {
+                        const parts = name.split(' ');
+                        if (parts.length > 1) {
+                            unit = parts.slice(1).join(' ').trim();
+                        }
+                    } else if (name.includes('-')) {
+                        const parts = name.split('-');
+                        if (parts.length > 2) {
+                            unit = parts[1].trim();
+                        } else if (parts.length === 2) {
+                            let unitPart = parts[1].trim();
+                            unitPart = unitPart.replace(/[0-9_.\s]+/g, '');
+                            const commonSuffixes = ['高频词', '相关词', '列表', '关键词'];
+                            for (const suffix of commonSuffixes) {
+                                if (unitPart.endsWith(suffix)) {
+                                    unitPart = unitPart.slice(0, -suffix.length);
+                                }
+                            }
+                            if (unitPart.includes('旅游') && unitPart.length > 2) {
+                                unit = '旅游';
+                            } else if (unitPart.length > 4) {
+                                unit = unitPart.slice(0, 2).trim();
+                            } else {
+                                unit = unitPart.trim();
+                            }
+                        }
+                    }
+                    return unit || filename.replace('.csv', '').slice(0, 4);
+                }
+                
+                // ========== 高频需求工具的智能单元提取逻辑 ==========
+                let name = filename.replace('.csv', '');
+                
+                // 统计连字符数量
+                const hyphenCount = (name.match(/-/g) || []).length;
+                
+                if (hyphenCount >= 2) {
+                    // 逻辑一：有两个或以上连字符，提取第一个和最后一个连字符之间的完整内容
+                    const firstHyphenIndex = name.indexOf('-');
+                    const lastHyphenIndex = name.lastIndexOf('-');
+                    if (firstHyphenIndex !== -1 && lastHyphenIndex !== -1 && firstHyphenIndex < lastHyphenIndex) {
+                        let unit = name.substring(firstHyphenIndex + 1, lastHyphenIndex).trim();
+                        // 清理单元名中的数字、下划线、空格等
+                        unit = unit.replace(/[0-9_.\s]+/g, '');
+                        if (unit) return unit;
+                    }
+                } else if (hyphenCount === 1) {
+                    // 逻辑二：只有一个连字符，提取连字符之后、"高频词"之前的完整词语
+                    const hyphenIndex = name.indexOf('-');
+                    if (hyphenIndex !== -1 && hyphenIndex < name.length - 1) {
+                        // 找到"高频词"的位置
+                        const freqIndex = name.indexOf('高频词');
+                        let endIndex = name.length;
+                        if (freqIndex !== -1 && freqIndex > hyphenIndex) {
+                            endIndex = freqIndex;
+                        }
+                        let unit = name.substring(hyphenIndex + 1, endIndex).trim();
+                        // 清理单元名中的数字、下划线、空格等
+                        unit = unit.replace(/[0-9_.\s]+/g, '');
+                        if (unit) return unit;
+                    }
+                }
+                
+                // 如果没有连字符，返回文件名本身（清理后）
+                let fallback = name.replace(/[0-9_.\s]+/g, '');
+                return fallback || filename.replace('.csv', '').slice(0, 6);
+            }
+            // ========================================================================
             
             function checkKeywordLength(keyword, minLen, maxLen, enableFilter) { if (!enableFilter) return true; const len = keyword.length; return len >= minLen && len <= maxLen; }
             
@@ -1407,7 +1480,58 @@
             
             function showStatus(message, type) { statusDiv.style.display = 'block'; statusDiv.textContent = message; statusDiv.className = 'status ' + type; }
             
-            function displayStats(commonWords, skipRows, keepEmpty, keepGarbled, enableLengthFilter, minLen, maxLen) { const totalExtracted = fileStats.reduce((sum, s) => sum + (s.extractedRows || 0), 0); const totalRows = fileStats.reduce((sum, s) => sum + (s.totalRows || 0), 0); const totalSkipped = fileStats.reduce((sum, s) => sum + (s.skippedRows || 0), 0); const totalEmpty = fileStats.reduce((sum, s) => sum + (s.emptyRows || 0), 0); const totalGarbled = fileStats.reduce((sum, s) => sum + (s.garbledRows || 0), 0); const totalLengthFiltered = fileStats.reduce((sum, s) => sum + (s.lengthFilteredRows || 0), 0); const errorFiles = fileStats.filter(s => s.error); const expectedAfterSkip = totalRows - totalSkipped; const actualExtracted = totalExtracted; summaryStatsDiv.innerHTML = `<table style="width: 100%"><thead><tr><th>统计项</th><th>数值</th></tr></thead><tbody><tr><td>📊 处理的 CSV 文件数</td><td><strong>${fileStats.length}</strong></td></tr><tr><td>📝 CSV 文件总行数</td><td><strong>${totalRows.toLocaleString()}</strong> 行</td></tr><tr><td>⏭️ 跳过的行数（前 ${skipRows} 行）</td><td><strong>${totalSkipped.toLocaleString()}</strong> 行</td></tr><tr><td>📊 跳过后的应得行数</td><td><strong>${expectedAfterSkip.toLocaleString()}</strong> 行</td></tr><tr style="background: #fff5e6"><td>⚠️ 被过滤的空值行</td><td class="warning"><strong>${totalEmpty.toLocaleString()}</strong> 行 ${keepEmpty ? '(已选择保留)' : '(已过滤)'}</td></tr><tr style="background: #fff5e6"><td>⚠️ 被过滤的乱码行</td><td class="warning"><strong>${totalGarbled.toLocaleString()}</strong> 行 ${keepGarbled ? '(已选择保留)' : '(已过滤)'}</td></tr>${enableLengthFilter ? `<tr style="background: #fff5e6"><td>✂️ 被过滤的长度不符行（${minLen}~${maxLen}字符）</td><td class="warning"><strong>${totalLengthFiltered.toLocaleString()}</strong> 行</td></tr>` : ''}<tr><td>✅ 实际提取的关键词数</td><td><strong style="color: #48bb78;">${actualExtracted.toLocaleString()}</strong> 条</td></tr><tr><td>📉 提取率</td><td><strong>${expectedAfterSkip > 0 ? ((actualExtracted / expectedAfterSkip) * 100).toFixed(2) : 0}%</strong></td></tr>${errorFiles.length > 0 ? `<tr style="background: #fee2e2"><td>⚠️ 解析失败的文件</td><td class="warning">${errorFiles.length} 个</td></tr>` : ''}</tbody></table><div style="margin-top: 15px; padding: 10px; background: #eef2fa; border-radius: 8px;"><strong>💡 核对说明：</strong><br>应得行数 = 总行数 - 跳过行数<br>实际提取 = 应得行数 - 空值行 - 乱码行 ${enableLengthFilter ? '- 长度不符行' : ''}<br>${enableLengthFilter ? `<span style="color: #f59e0b;">✂️ 当前长度筛选范围：${minLen} ~ ${maxLen} 个字符</span><br>` : ''}</div>`; let detailHtml = '<table><thead><tr><th>文件名</th><th>计划</th><th>单元</th><th>总行数</th><th>跳过</th><th>空值</th><th>乱码</th><th>长度过滤</th><th>提取</th></tr></thead><tbody>'; for (const stat of fileStats) { detailHtml += `<tr><td>${escapeHtml(stat.fileName)}</td><td>${escapeHtml(stat.planName)}</td><td>${escapeHtml(stat.unitName)}</td><td>${formatNumber(stat.totalRows)}</td><td>${formatNumber(stat.skippedRows)}</td><td>${formatNumber(stat.emptyRows)}</td><td>${formatNumber(stat.garbledRows)}</td><td>${formatNumber(stat.lengthFilteredRows)}</td><td><strong>${formatNumber(stat.extractedRows)}</strong></td></tr>`; } detailHtml += '</tbody></table>'; detailStatsDiv.innerHTML = detailHtml; if (filteredDataDetails.length > 0) { let filteredHtml = '<table><thead><tr><th>文件名</th><th>行号</th><th>内容</th><th>过滤原因</th></tr></thead><tbody>'; for (const item of filteredDataDetails.slice(0, 500)) { filteredHtml += `<tr style="background: #f9fafb;"><td>${escapeHtml(item.fileName)}</td><td>${item.rowNumber}</td><td>${escapeHtml(item.content)}</td><td style="color: #6b7280;">${item.reason}</td></tr>`; } if (filteredDataDetails.length > 500) { filteredHtml += `<tr><td colspan="4" style="text-align: center;">... 还有 ${filteredDataDetails.length - 500} 行被过滤的数据未显示</td></tr>`; } filteredHtml += '</tbody></table>'; filteredStatsDiv.innerHTML = filteredHtml; } else { filteredStatsDiv.innerHTML = '<p style="text-align: center; color: #718096;">没有被过滤的数据</p>'; } }
+            function displayStats(commonWords, skipRows, keepEmpty, keepGarbled, enableLengthFilter, minLen, maxLen) { const totalExtracted = fileStats.reduce((sum, s) => sum + (s.extractedRows || 0), 0); const totalRows = fileStats.reduce((sum, s) => sum + (s.totalRows || 0), 0); const totalSkipped = fileStats.reduce((sum, s) => sum + (s.skippedRows || 0), 0); const totalEmpty = fileStats.reduce((sum, s) => sum + (s.emptyRows || 0), 0); const totalGarbled = fileStats.reduce((sum, s) => sum + (s.garbledRows || 0), 0); const totalLengthFiltered = fileStats.reduce((sum, s) => sum + (s.lengthFilteredRows || 0), 0); const errorFiles = fileStats.filter(s => s.error); const expectedAfterSkip = totalRows - totalSkipped; const actualExtracted = totalExtracted; summaryStatsDiv.innerHTML = `<table style="width: 100%"><thead><tr><th>统计项</th><th>数值</th></tr></thead><tbody><tr><td>📊 处理的 CSV 文件数</td>。<strong>${fileStats.length}</strong></td></tr>
+                    <tr>。<📝 CSV 文件总行数</td>。<strong>${totalRows.toLocaleString()}</strong> 行</td></tr>
+                    <tr>。<⏭️ 跳过的行数（前 ${skipRows} 行）</td>。<strong>${totalSkipped.toLocaleString()}</strong> 行</td></tr>
+                    <tr>。<📊 跳过后的应得行数</td>。<strong>${expectedAfterSkip.toLocaleString()}</strong> 行</td></tr>
+                    <tr style="background: #fff5e6">。<⚠️ 被过滤的空值行</td><td class="warning"><strong>${totalEmpty.toLocaleString()}</strong> 行 ${keepEmpty ? '(已选择保留)' : '(已过滤)'}</td></tr>
+                    <tr style="background: #fff5e6">。<⚠️ 被过滤的乱码行</td><td class="warning"><strong>${totalGarbled.toLocaleString()}</strong> 行 ${keepGarbled ? '(已选择保留)' : '(已过滤)'}</td></tr>
+                    ${enableLengthFilter ? `<tr style="background: #fff5e6">。<✂️ 被过滤的长度不符行（${minLen}~${maxLen}字符）</td><td class="warning"><strong>${totalLengthFiltered.toLocaleString()}</strong> 行</td></tr>` : ''}
+                    <tr>。<✅ 实际提取的关键词数</td>。<strong style="color: #48bb78;">${actualExtracted.toLocaleString()}</strong> 条</td></tr>
+                    <tr>。<📉 提取率</td>。<strong>${expectedAfterSkip > 0 ? ((actualExtracted / expectedAfterSkip) * 100).toFixed(2) : 0}%</strong></td></tr>
+                    ${errorFiles.length > 0 ? `<tr style="background: #fee2e2">。<⚠️ 解析失败的文件</td><td class="warning">${errorFiles.length} 个</td></tr>` : ''}
+                </tbody></table>
+                <div style="margin-top: 15px; padding: 10px; background: #eef2fa; border-radius: 8px;">
+                    <strong>💡 核对说明：</strong><br>
+                    应得行数 = 总行数 - 跳过行数<br>
+                    实际提取 = 应得行数 - 空值行 - 乱码行 ${enableLengthFilter ? '- 长度不符行' : ''}<br>
+                    ${enableLengthFilter ? `<span style="color: #f59e0b;">✂️ 当前长度筛选范围：${minLen} ~ ${maxLen} 个字符</span><br>` : ''}
+                </div>`;
+                let detailHtml = '<tr><thead><tr><th>文件名</th><th>计划</th><th>单元</th><th>总行数</th><th>跳过</th><th>空值</th><th>乱码</th><th>长度过滤</th><th>提取</th></tr></thead><tbody>';
+                for (const stat of fileStats) {
+                    detailHtml += `<tr>
+                        <td>${escapeHtml(stat.fileName)}</td>
+                        <td>${escapeHtml(stat.planName)}</td>
+                        <td>${escapeHtml(stat.unitName)}</td>
+                        <td>${formatNumber(stat.totalRows)}</td>
+                        <td>${formatNumber(stat.skippedRows)}</td>
+                        <td>${formatNumber(stat.emptyRows)}</td>
+                        <td>${formatNumber(stat.garbledRows)}</td>
+                        <td>${formatNumber(stat.lengthFilteredRows)}</td>
+                        <td><strong>${formatNumber(stat.extractedRows)}</strong></td>
+                    </tr>`;
+                }
+                detailHtml += '</tbody></table>';
+                detailStatsDiv.innerHTML = detailHtml;
+                if (filteredDataDetails.length > 0) {
+                    let filteredHtml = '<table><thead><tr><th>文件名</th><th>行号</th><th>内容</th><th>过滤原因</th></tr></thead><tbody>';
+                    for (const item of filteredDataDetails.slice(0, 500)) {
+                        filteredHtml += `<tr style="background: #f9fafb;">
+                            <td>${escapeHtml(item.fileName)}</td>
+                            <td>${item.rowNumber}</td>
+                            <td>${escapeHtml(item.content)}</td>
+                            <td style="color: #6b7280;">${item.reason}</td>
+                        </tr>`;
+                    }
+                    if (filteredDataDetails.length > 500) {
+                        filteredHtml += `<tr><td colspan="4" style="text-align: center;">... 还有 ${filteredDataDetails.length - 500} 行被过滤的数据未显示</td></tr>`;
+                    }
+                    filteredHtml += '</tbody></table>';
+                    filteredStatsDiv.innerHTML = filteredHtml;
+                } else {
+                    filteredStatsDiv.innerHTML = '<p style="text-align: center; color: #718096;">没有被过滤的数据</p>';
+                }
+            }
             
             function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
             function formatNumber(num) { if (num === undefined || num === null) return '-'; if (typeof num === 'number') { return num.toLocaleString(); } return String(num); }
