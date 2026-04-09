@@ -150,7 +150,6 @@
             display: none;
         }
 
-        /* 工具卡片网格布局 */
         .tool-cards-grid {
             display: flex;
             flex-direction: column;
@@ -383,7 +382,7 @@
             .footer { padding: 12px 15px; }
         }
 
-        /* 原有工具样式 - 保持不变 */
+        /* 原有工具样式 */
         .drop-zone {
             border: 2px dashed rgba(255,107,107,0.25);
             border-radius: var(--radius-lg);
@@ -468,7 +467,7 @@
         ::-webkit-scrollbar-thumb { background: rgba(255,107,107,0.3); border-radius: 4px; }
         ::selection { background: rgba(255, 107, 107, 0.3); color: var(--text-primary); }
         
-        /* 第四工具专用样式 - 优化版 */
+        /* 第四工具专用样式 */
         .filter-tool-container {
             display: flex;
             flex-wrap: wrap;
@@ -544,7 +543,6 @@
         }
         .preview-table th { background: #f1f5f9; position: sticky; top: 0; }
         
-        /* 第四工具进度条 */
         .filter-progress-container {
             margin: 20px 0;
             display: none;
@@ -578,6 +576,13 @@
             font-size: 12px;
             color: #92400e;
         }
+        .clear-buttons-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-clear-origin { background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); font-size: 0.8rem; padding: 8px 16px; }
+        .btn-clear-blacklist { background: linear-gradient(135deg, #dd6b20 0%, #c05621 100%); font-size: 0.8rem; padding: 8px 16px; }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jschardet@3.0.0/dist/jschardet.min.js"></script>
@@ -588,7 +593,7 @@
         <div class="header">
             <h1>📊 CSV合并工具集</h1>
             <p>一站式CSV文件处理解决方案</p>
-            <p class="subtitle">高频需求 | 疑问词 | 长尾词 | 黑词筛选器（支持20W+数据）</p>
+            <p class="subtitle">高频需求 | 疑问词 | 长尾词 | 黑词筛选器</p>
         </div>
 
         <div class="content">
@@ -599,7 +604,6 @@
                 </div>
 
                 <div class="tool-cards-grid">
-                    <!-- 第一行：三个原有工具 -->
                     <div class="cards-row">
                         <div class="tool-card highfreq" onclick="window.showTool('highfreq')">
                             <span class="tool-icon">🚀</span>
@@ -608,7 +612,7 @@
                             <ul class="tool-features">
                                 <li>智能拆分计划与单元列</li>
                                 <li>关键词长度筛选</li>
-                                <li>Excel/CSV黑词导入过滤</li>
+                                <li>Excel/CSV黑词导入过滤（支持百万级）</li>
                             </ul>
                         </div>
                         <div class="tool-card question" onclick="window.showTool('question')">
@@ -618,7 +622,7 @@
                             <ul class="tool-features">
                                 <li>疑问词智能识别</li>
                                 <li>批量文件处理</li>
-                                <li>Excel/CSV黑词导入过滤</li>
+                                <li>Excel/CSV黑词导入过滤（支持百万级）</li>
                             </ul>
                         </div>
                         <div class="tool-card longtail" onclick="window.showTool('longtail')">
@@ -628,28 +632,27 @@
                             <ul class="tool-features">
                                 <li>长尾词智能提取</li>
                                 <li>高效批量合并</li>
-                                <li>Excel/CSV黑词导入过滤</li>
+                                <li>Excel/CSV黑词导入过滤（支持百万级）</li>
                             </ul>
                         </div>
                     </div>
-                    <!-- 第二行：第四个工具 - 黑词筛选器（优化版） -->
                     <div class="cards-row">
                         <div class="tool-card blackfilter" style="grid-column: span 3;" onclick="window.showTool('blackfilter')">
                             <span class="tool-icon">🛡️</span>
                             <h3>黑词筛选器（独立工具 · 支持20W+数据）</h3>
-                            <p>针对单个文件的关键词列进行黑词过滤。支持多黑词表，分批处理不卡顿，实时进度显示。</p>
+                            <p>针对单个文件的关键词列进行黑词过滤。支持多黑词表，分批处理不卡顿，保留原始文件所有列。</p>
                             <ul class="tool-features">
-                                <li>📄 上传原始Excel/CSV文件（支持20万+数据）</li>
+                                <li>📄 上传原始Excel/CSV文件（保留所有列）</li>
                                 <li>📚 上传一个或多个黑词表（Excel/CSV）</li>
                                 <li>🔍 预览原始数据 & 黑词表</li>
                                 <li>⚡ 分批异步处理，界面不卡顿 + 实时进度条</li>
-                                <li>✅ 过滤黑词，展示被过滤内容，下载剩余关键词</li>
+                                <li>✅ 过滤黑词，展示被过滤内容，下载保留原始格式的CSV</li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <div class="info-box">
-                    <strong>💡 使用提示：</strong> 点击上方卡片选择对应的工具。第四工具「黑词筛选器」已优化支持20万+数据，分批处理不卡顿。
+                    <strong>💡 使用提示：</strong> 点击上方卡片选择对应的工具。前三个工具的黑词过滤已升级为分批处理+进度条，支持百万级数据。
                 </div>
             </div>
 
@@ -665,7 +668,7 @@
     </div>
 
     <script>
-        // ======================== 全局路由与工具隔离 ========================
+        // ======================== 全局路由 ========================
         let toolInstances = { highfreq: null, question: null, longtail: null, blackfilter: null };
         
         window.showTool = function(toolType) {
@@ -707,9 +710,9 @@
         // ======================== 原有三个工具的HTML ========================
         function getLegacyToolHTML(toolType) {
             const configs = {
-                highfreq: { title: '📁 高频需求文件夹 CSV 合并工具', subtitle: '输出格式：计划 | 单元 | 关键词 | 支持长度筛选 | 大文件稳定下载', color: '#667eea', gradient: 'linear-gradient(90deg, #667eea, #764ba2)' },
-                question: { title: '❓ 疑问词文件夹 CSV 合并工具', subtitle: '输出格式：疑问词 | 支持批量处理 | 智能去重', color: '#11998e', gradient: 'linear-gradient(90deg, #11998e, #38ef7d)' },
-                longtail: { title: '🎯 长尾词文件夹 CSV 合并工具', subtitle: '输出格式：长尾词 | 大规模数据处理 | 高效合并', color: '#f5576c', gradient: 'linear-gradient(90deg, #f093fb, #f5576c)' }
+                highfreq: { title: '📁 高频需求文件夹 CSV 合并工具', subtitle: '输出格式：计划 | 单元 | 关键词 | 支持长度筛选', color: '#667eea', gradient: 'linear-gradient(90deg, #667eea, #764ba2)' },
+                question: { title: '❓ 疑问词文件夹 CSV 合并工具', subtitle: '输出格式：计划 | 单元 | 关键词 | 支持批量处理', color: '#11998e', gradient: 'linear-gradient(90deg, #11998e, #38ef7d)' },
+                longtail: { title: '🎯 长尾词文件夹 CSV 合并工具', subtitle: '输出格式：计划 | 单元 | 关键词 | 大规模数据处理', color: '#f5576c', gradient: 'linear-gradient(90deg, #f093fb, #f5576c)' }
             };
             const cfg = configs[toolType];
             return `
@@ -788,7 +791,7 @@
                 </div>
                 <div class="section-divider"></div>
                 <div class="blacklist-section">
-                    <h4>🚫 黑词过滤模块</h4>
+                    <h4>🚫 黑词过滤模块（已升级：分批处理+进度条，支持百万级数据）</h4>
                     <p style="font-size: 0.85rem; color: #718096; margin-bottom: 15px;">导入包含黑词的Excel/CSV文件，系统将自动筛除包含黑词的关键词</p>
                     <div id="blacklistDropZone" class="blacklist-drop-zone">
                         <div style="font-size: 36px; margin-bottom: 10px;">📋</div>
@@ -802,6 +805,10 @@
                         <div class="blacklist-stat-item"><div class="number" id="remainingCount">0</div><div class="label">剩余关键词</div></div>
                     </div>
                     <div id="blacklistPreview" style="display: none;" class="blacklist-preview"></div>
+                    <div id="blacklistFilterProgress" class="filter-progress-container" style="display:none;">
+                        <div class="filter-progress-bar"><div id="blacklistFilterProgressFill" class="filter-progress-fill"></div></div>
+                        <div id="blacklistFilterProgressText" class="filter-progress-text" style="text-align:center; margin-top:5px;"></div>
+                    </div>
                     <div class="button-group" style="margin-top: 15px;">
                         <button id="applyBlacklistBtn" disabled style="background: #f56565;">🚫 执行黑词过滤</button>
                         <button id="clearBlacklistBtn" class="btn-secondary">🗑️ 清除黑词</button>
@@ -815,20 +822,20 @@
                         <table style="width: 100%;"><thead><tr><th>序号</th><th>关键词内容</th><th>匹配的黑词</th></tr></thead><tbody id="blacklistFilteredTable"></tbody></table>
                     </div>
                     <div class="download-options">
-                        <button id="downloadFilteredBtn" class="btn-filtered" disabled>💾 下载过黑词版（已过滤）</button>
+                        <button id="downloadFilteredBtn" class="btn-filtered" disabled>💾 下载过黑词版（保留计划/单元/关键词）</button>
                         <button id="downloadUnfilteredBtn" class="btn-unfiltered" disabled>💾 下载未过黑词版（原始）</button>
                     </div>
                 </div>
             `;
         }
         
-        // ======================== 第四工具：黑词筛选器（优化版 - 支持20万+数据） ========================
+        // ======================== 第四工具：黑词筛选器（优化版，带独立清除按钮） ========================
         function getBlackFilterHTML() {
             return `
                 <div style="margin-bottom:20px; background:linear-gradient(135deg, #6B5B9510 0%, #88B04B20 100%); border-left:5px solid #6B5B95; border-radius:16px; padding:20px;">
                     <h2 style="color:#6B5B95;">🛡️ 黑词筛选器（优化版）</h2>
                     <p style="color:#4a5568;">上传原始文件（Excel/CSV），上传一个或多个黑词表，系统自动过滤关键词列中包含黑词的条目。</p>
-                    <p style="color:#4a5568; font-size:13px; margin-top:8px;">⚡ 已优化：分批异步处理 | 实时进度条 | 支持20万+数据 | 界面不卡顿</p>
+                    <p style="color:#4a5568; font-size:13px; margin-top:8px;">✅ 过滤后保留原始文件的所有列和格式 | ⚡ 分批异步处理 | 支持20万+数据</p>
                 </div>
                 <div class="filter-tool-container">
                     <div class="upload-box">
@@ -838,6 +845,9 @@
                             <div style="font-size:12px; color:#718096;">支持 .xlsx, .xls, .csv (GBK编码)</div>
                         </div>
                         <div id="originPreviewArea" class="preview-area" style="display:none;"></div>
+                        <div class="clear-buttons-group">
+                            <button id="clearOriginBtn" class="btn-clear-origin" style="display:none;">🗑️ 清除原始文件</button>
+                        </div>
                     </div>
                     <div class="upload-box">
                         <div id="blacklistDropZoneMulti" class="simple-drop-zone">
@@ -846,6 +856,9 @@
                             <div style="font-size:12px; color:#718096;">支持 .xlsx, .xls, .csv，多个文件自动合并去重</div>
                         </div>
                         <div id="blacklistPreviewArea" class="preview-area" style="display:none;"></div>
+                        <div class="clear-buttons-group">
+                            <button id="clearBlacklistOnlyBtn" class="btn-clear-blacklist" style="display:none;">🗑️ 清除黑词表</button>
+                        </div>
                     </div>
                 </div>
                 <div id="performanceWarning" class="performance-warning" style="display:none;">
@@ -859,8 +872,8 @@
                 </div>
                 <div class="button-group" style="justify-content:center; gap:20px;">
                     <button id="startFilterBtn" disabled style="background:#6B5B95;">🔍 开始过滤黑词</button>
-                    <button id="clearFilterBtn" class="btn-secondary">🗑️ 清空所有数据</button>
-                    <button id="downloadResultBtn" disabled style="background:#88B04B;">💾 下载过滤后CSV</button>
+                    <button id="clearAllBtn" class="btn-secondary">🗑️ 清空所有数据</button>
+                    <button id="downloadResultBtn" disabled style="background:#88B04B;">💾 下载过滤后CSV（保留原始所有列）</button>
                 </div>
                 <div id="filterStatus" class="status" style="display:none;"></div>
                 <div id="filterResultArea" style="margin-top:20px; display:none;">
@@ -871,9 +884,10 @@
             `;
         }
         
-        // 优化版初始化 - 支持大文件分批处理
+        // 优化版初始化 - 保留原始所有列，支持独立清除
         function initBlackFilterOptimized() {
             let originData = [];
+            let originHeader = [];
             let blackWordsSet = new Set();
             let filteredRecords = [];
             let remainingData = [];
@@ -884,7 +898,9 @@
             const originDrop = document.getElementById('originDropZone');
             const blacklistDrop = document.getElementById('blacklistDropZoneMulti');
             const startBtn = document.getElementById('startFilterBtn');
-            const clearBtn = document.getElementById('clearFilterBtn');
+            const clearAllBtn = document.getElementById('clearAllBtn');
+            const clearOriginBtn = document.getElementById('clearOriginBtn');
+            const clearBlacklistOnlyBtn = document.getElementById('clearBlacklistOnlyBtn');
             const downloadBtn = document.getElementById('downloadResultBtn');
             const statusDiv = document.getElementById('filterStatus');
             const resultArea = document.getElementById('filterResultArea');
@@ -926,17 +942,23 @@
                 });
             }
             
+            function updateClearButtonsVisibility() {
+                if (clearOriginBtn) clearOriginBtn.style.display = originLoaded ? 'inline-block' : 'none';
+                if (clearBlacklistOnlyBtn) clearBlacklistOnlyBtn.style.display = blacklistLoaded ? 'inline-block' : 'none';
+            }
+            
             async function handleOrigin(file) {
                 try {
                     showMsg('正在解析原始文件...', '');
                     const rows = await parseFileToRows(file);
                     if (!rows || rows.length < 2) throw new Error("文件内容不足");
                     
-                    // 自动查找关键词列
+                    originHeader = rows[0] ? [...rows[0]] : [];
+                    
                     let keyCol = 0;
-                    if (rows[0] && Array.isArray(rows[0])) {
-                        for (let i = 0; i < rows[0].length; i++) {
-                            if (rows[0][i] && String(rows[0][i]).includes("关键词")) {
+                    if (originHeader && originHeader.length) {
+                        for (let i = 0; i < originHeader.length; i++) {
+                            if (originHeader[i] && String(originHeader[i]).includes("关键词")) {
                                 keyCol = i; break;
                             }
                         }
@@ -947,32 +969,80 @@
                         const row = rows[i];
                         if (row && row.length > keywordColIndex) {
                             let kw = row[keywordColIndex] ? String(row[keywordColIndex]).trim() : "";
-                            if (kw) originData.push({ keyword: kw, fullRow: row });
+                            if (kw) originData.push({ keyword: kw, fullRow: [...row] });
                         }
                     }
                     originFileName = file.name;
                     
-                    // 显示性能警告
                     if (originData.length > 50000) {
                         performanceWarning.style.display = 'block';
                     } else {
                         performanceWarning.style.display = 'none';
                     }
                     
-                    // 预览（只显示前12行）
-                    let previewHtml = '<table class="preview-table"><thead><tr><th>行号</th><th>关键词列</th><th>原始行片段</th></tr></thead><tbody>';
-                    for (let i = 0; i < Math.min(12, rows.length); i++) {
-                        let row = rows[i];
-                        let kw = (keywordColIndex < row.length) ? row[keywordColIndex] : '';
-                        previewHtml += `<tr><td style="padding:6px;">${i+1}</td><td style="padding:6px;">${escapeHtml(String(kw).substring(0,50))}</td><td style="padding:6px;">${escapeHtml(row.slice(0,3).join('|'))}</td></tr>`;
+                    let previewHtml = '<table class="preview-table"><thead><tr>';
+                    for (let i = 0; i < Math.min(6, originHeader.length); i++) {
+                        previewHtml += `<th>${escapeHtml(String(originHeader[i] || ''))}</th>`;
                     }
-                    previewHtml += '</tbody>赶稿';
-                    originPreview.innerHTML = `<strong>📄 原始文件（共 ${originData.length.toLocaleString()} 条关键词）</strong><br>${previewHtml}`;
+                    previewHtml += '</tr></thead><tbody>';
+                    for (let i = 0; i < Math.min(12, rows.length - 1); i++) {
+                        const row = rows[i + 1];
+                        previewHtml += '<tr>';
+                        for (let j = 0; j < Math.min(6, row.length); j++) {
+                            let cell = row[j] || '';
+                            if (j === keywordColIndex) {
+                                previewHtml += `<td style="background:#fff0f0;"><strong>${escapeHtml(String(cell).substring(0, 40))}</strong></td>`;
+                            } else {
+                                previewHtml += `<td>${escapeHtml(String(cell).substring(0, 30))}</td>`;
+                            }
+                        }
+                        previewHtml += '</tr>';
+                    }
+                    previewHtml += '</tbody></table>';
+                    originPreview.innerHTML = `<strong>📄 原始文件（共 ${originData.length.toLocaleString()} 条关键词，关键词列已标红）</strong><br>${previewHtml}`;
                     originPreview.style.display = 'block';
                     originLoaded = true;
                     checkReady();
+                    updateClearButtonsVisibility();
                     showMsg(`原始文件加载成功，共 ${originData.length.toLocaleString()} 条关键词`, 'success');
-                } catch(e) { showMsg(`解析失败: ${e.message}`, 'error'); originLoaded = false; }
+                } catch(e) { showMsg(`解析失败: ${e.message}`, 'error'); originLoaded = false; updateClearButtonsVisibility(); }
+            }
+            
+            function clearOriginOnly() {
+                if (isFiltering) { showMsg('请等待当前过滤完成', 'error'); return; }
+                originData = [];
+                originHeader = [];
+                originFileName = "";
+                originLoaded = false;
+                originPreview.style.display = 'none';
+                originPreview.innerHTML = '';
+                performanceWarning.style.display = 'none';
+                // 清除过滤结果区域
+                resultArea.style.display = 'none';
+                filteredRecords = [];
+                remainingData = [];
+                downloadBtn.disabled = true;
+                if (startBtn) startBtn.disabled = true;
+                checkReady();
+                updateClearButtonsVisibility();
+                showMsg('原始文件已清除', 'success');
+            }
+            
+            function clearBlacklistOnly() {
+                if (isFiltering) { showMsg('请等待当前过滤完成', 'error'); return; }
+                blackWordsSet.clear();
+                blacklistLoaded = false;
+                blacklistPreview.style.display = 'none';
+                blacklistPreview.innerHTML = '';
+                // 清除过滤结果区域
+                resultArea.style.display = 'none';
+                filteredRecords = [];
+                remainingData = [];
+                downloadBtn.disabled = true;
+                if (startBtn) startBtn.disabled = true;
+                checkReady();
+                updateClearButtonsVisibility();
+                showMsg('黑词表已清除', 'success');
             }
             
             async function handleBlacklistFiles(files) {
@@ -993,7 +1063,6 @@
                 }
                 blackWordsSet = newSet;
                 
-                // 显示黑词预览
                 let wordArr = Array.from(blackWordsSet).slice(0, 50);
                 let html = `<div><strong>📚 黑词表（${blackWordsSet.size.toLocaleString()} 个词）</strong><br><div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:8px;">`;
                 wordArr.forEach(w => { html += `<span style="background:#ffe0e0; padding:4px 12px; border-radius:20px; font-size:12px;">${escapeHtml(w)}</span>`; });
@@ -1003,15 +1072,15 @@
                 blacklistPreview.style.display = 'block';
                 blacklistLoaded = true;
                 checkReady();
+                updateClearButtonsVisibility();
                 showMsg(`黑词导入完成，共 ${blackWordsSet.size.toLocaleString()} 个黑词`, 'success');
             }
             
             function checkReady() {
-                if (originLoaded && blackWordsSet.size > 0) startBtn.disabled = false;
-                else startBtn.disabled = true;
+                if (originLoaded && blackWordsSet.size > 0 && startBtn) startBtn.disabled = false;
+                else if (startBtn) startBtn.disabled = true;
             }
             
-            // 分批过滤核心函数 - 支持大文件不卡顿
             async function performFilterAsync() {
                 if (isFiltering) {
                     showMsg('正在过滤中，请稍候...', 'error');
@@ -1021,28 +1090,25 @@
                 if (!blackWordsSet.size) { showMsg("请先导入黑词表",'error'); return; }
                 
                 isFiltering = true;
-                startBtn.disabled = true;
+                if (startBtn) startBtn.disabled = true;
                 progressContainer.style.display = 'block';
                 progressFill.style.width = '0%';
                 progressText.innerHTML = '准备过滤...';
                 
-                // 黑词索引优化：如果黑词较多，构建正则表达式加速
                 let blacklistArray = Array.from(blackWordsSet);
                 let useRegex = blacklistArray.length > 100;
                 let regexPattern = null;
                 if (useRegex) {
-                    // 转义正则特殊字符
                     const escapedWords = blacklistArray.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
                     regexPattern = new RegExp(escapedWords.join('|'), 'i');
                 }
                 
                 const totalCount = originData.length;
-                const BATCH_SIZE = 5000; // 每批处理5000条
+                const BATCH_SIZE = 5000;
                 let processedCount = 0;
                 let newFilteredRecords = [];
                 let newRemainingData = [];
                 
-                // 异步分批处理
                 function processBatch(startIndex) {
                     return new Promise((resolve) => {
                         const endIndex = Math.min(startIndex + BATCH_SIZE, totalCount);
@@ -1054,7 +1120,6 @@
                             
                             if (useRegex && regexPattern) {
                                 if (regexPattern.test(lowKw)) {
-                                    // 找到具体匹配的词
                                     for (let bw of blacklistArray) {
                                         if (lowKw.includes(bw.toLowerCase())) {
                                             matched = bw;
@@ -1072,7 +1137,7 @@
                             }
                             
                             if (matched) {
-                                newFilteredRecords.push({ keyword: item.keyword, matchedWord: matched });
+                                newFilteredRecords.push({ keyword: item.keyword, matchedWord: matched, fullRow: item.fullRow });
                             } else {
                                 newRemainingData.push(item);
                             }
@@ -1099,7 +1164,6 @@
                     progressFill.style.width = '100%';
                     progressText.innerHTML = `处理完成！共 ${filteredRecords.length.toLocaleString()} 条被过滤`;
                     
-                    // 显示结果
                     resultArea.style.display = 'block';
                     let detailHtml = '';
                     const displayLimit = Math.min(500, filteredRecords.length);
@@ -1120,14 +1184,14 @@
                         过滤率: <strong>${((filteredRecords.length/originData.length)*100).toFixed(2)}%</strong>
                     `;
                     
-                    downloadBtn.disabled = false;
+                    if (downloadBtn) downloadBtn.disabled = false;
                     showMsg(`过滤完成！已过滤 ${filteredRecords.length.toLocaleString()} 条，剩余 ${remainingData.length.toLocaleString()} 条`, 'success');
                     
                 } catch (error) {
                     showMsg(`过滤出错: ${error.message}`, 'error');
                 } finally {
                     isFiltering = false;
-                    startBtn.disabled = false;
+                    if (startBtn) startBtn.disabled = false;
                     setTimeout(() => {
                         progressContainer.style.display = 'none';
                     }, 2000);
@@ -1140,6 +1204,7 @@
                     return;
                 }
                 originData = []; 
+                originHeader = [];
                 blackWordsSet.clear(); 
                 filteredRecords = []; 
                 remainingData = [];
@@ -1149,22 +1214,30 @@
                 blacklistPreview.style.display = 'none';
                 resultArea.style.display = 'none';
                 performanceWarning.style.display = 'none';
-                startBtn.disabled = true; 
-                downloadBtn.disabled = true;
+                if (startBtn) startBtn.disabled = true; 
+                if (downloadBtn) downloadBtn.disabled = true;
                 progressContainer.style.display = 'none';
+                updateClearButtonsVisibility();
                 showMsg("已清空所有数据", 'success');
             }
             
             function downloadFiltered() {
                 if(remainingData.length === 0) { showMsg("没有剩余数据可下载",'error'); return; }
-                let csvRows = [["关键词"]];
-                // 分批构建CSV，避免大字符串卡顿
-                const chunkSize = 50000;
-                let csvContent = "关键词\n";
-                for (let i = 0; i < remainingData.length; i++) {
-                    let keyword = remainingData[i].keyword;
-                    csvContent += `"${String(keyword).replace(/"/g, '""')}"\n`;
+                
+                let csvRows = [];
+                if (originHeader && originHeader.length) {
+                    csvRows.push(originHeader.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(','));
+                } else {
+                    csvRows.push('"关键词"');
                 }
+                
+                for (let i = 0; i < remainingData.length; i++) {
+                    const row = remainingData[i].fullRow;
+                    const escapedRow = row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',');
+                    csvRows.push(escapedRow);
+                }
+                
+                const csvContent = csvRows.join('\n');
                 const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
                 const link = document.createElement('a');
                 const url = URL.createObjectURL(blob);
@@ -1172,7 +1245,7 @@
                 link.download = `${originFileName.replace(/\.[^/.]+$/, '')}_过滤后.csv`;
                 link.click();
                 URL.revokeObjectURL(url);
-                showMsg(`已下载 ${remainingData.length.toLocaleString()} 条关键词`, 'success');
+                showMsg(`已下载 ${remainingData.length.toLocaleString()} 条关键词（保留原始所有列）`, 'success');
             }
             
             function escapeHtml(str) { 
@@ -1185,7 +1258,6 @@
                 });
             }
             
-            // 事件绑定
             originDrop.addEventListener('click', () => { let inp = document.createElement('input'); inp.type='file'; inp.accept='.xlsx,.xls,.csv'; inp.onchange=e=>{ if(inp.files[0]) handleOrigin(inp.files[0]); }; inp.click(); });
             originDrop.addEventListener('dragover', e=>{ e.preventDefault(); originDrop.classList.add('drag-over'); });
             originDrop.addEventListener('dragleave', ()=> originDrop.classList.remove('drag-over'));
@@ -1196,24 +1268,20 @@
             blacklistDrop.addEventListener('dragleave', ()=> blacklistDrop.classList.remove('drag-over'));
             blacklistDrop.addEventListener('drop', e=>{ e.preventDefault(); blacklistDrop.classList.remove('drag-over'); if(e.dataTransfer.files.length) handleBlacklistFiles(e.dataTransfer.files); });
             
-            startBtn.addEventListener('click', performFilterAsync);
-            clearBtn.addEventListener('click', clearAll);
-            downloadBtn.addEventListener('click', downloadFiltered);
+            if (startBtn) startBtn.addEventListener('click', performFilterAsync);
+            if (clearAllBtn) clearAllBtn.addEventListener('click', clearAll);
+            if (clearOriginBtn) clearOriginBtn.addEventListener('click', clearOriginOnly);
+            if (clearBlacklistOnlyBtn) clearBlacklistOnlyBtn.addEventListener('click', clearBlacklistOnly);
+            if (downloadBtn) downloadBtn.addEventListener('click', downloadFiltered);
         }
         
-        // ======================== 原有三个工具的初始化（保持不变） ========================
+        // ======================== 原有三个工具的初始化（升级黑词过滤为分批处理） ========================
         function initLegacyTool(toolType) {
-            // 原有工具的完整逻辑（从原代码中保留）
-            // 由于代码量巨大，此处调用原始初始化函数
-            if (window.originalToolInitializer) {
-                window.originalToolInitializer(toolType);
-            } else {
-                initOriginalTool(toolType);
-            }
+            initOriginalToolUpgraded(toolType);
         }
         
-        // 原有工具的完整实现（保持不变）
-        function initOriginalTool(toolType) {
+        // 原有工具的升级版 - 黑词过滤使用分批异步处理+进度条
+        function initOriginalToolUpgraded(toolType) {
             let selectedFiles = [];
             let mergedData = [];
             let fileStats = [];
@@ -1223,6 +1291,7 @@
             let blacklistWords = [];
             let filteredData = [];
             let isBlacklistApplied = false;
+            let isBlacklistFiltering = false;
             
             const dropZone = document.getElementById('dropZone');
             const mergeBtn = document.getElementById('mergeBtn');
@@ -1256,22 +1325,32 @@
             const downloadFilteredBtn = document.getElementById('downloadFilteredBtn');
             const downloadUnfilteredBtn = document.getElementById('downloadUnfilteredBtn');
             const filterResultInfo = document.getElementById('filterResultInfo');
+            const blacklistFilterProgress = document.getElementById('blacklistFilterProgress');
+            const blacklistFilterProgressFill = document.getElementById('blacklistFilterProgressFill');
+            const blacklistFilterProgressText = document.getElementById('blacklistFilterProgressText');
             
             function setActiveTab(tab) {
-                document.getElementById('tabSummary').classList.remove('active');
-                document.getElementById('tabDetail').classList.remove('active');
-                document.getElementById('tabFiltered').classList.remove('active');
+                const tabSummary = document.getElementById('tabSummary');
+                const tabDetail = document.getElementById('tabDetail');
+                const tabFiltered = document.getElementById('tabFiltered');
+                if (!tabSummary || !tabDetail || !tabFiltered) return;
+                tabSummary.classList.remove('active');
+                tabDetail.classList.remove('active');
+                tabFiltered.classList.remove('active');
                 summaryStatsDiv.classList.remove('active');
                 detailStatsDiv.classList.remove('active');
                 filteredStatsDiv.classList.remove('active');
-                if (tab === 'summary') { document.getElementById('tabSummary').classList.add('active'); summaryStatsDiv.classList.add('active'); }
-                else if (tab === 'detail') { document.getElementById('tabDetail').classList.add('active'); detailStatsDiv.classList.add('active'); }
-                else if (tab === 'filtered') { document.getElementById('tabFiltered').classList.add('active'); filteredStatsDiv.classList.add('active'); }
+                if (tab === 'summary') { tabSummary.classList.add('active'); summaryStatsDiv.classList.add('active'); }
+                else if (tab === 'detail') { tabDetail.classList.add('active'); detailStatsDiv.classList.add('active'); }
+                else if (tab === 'filtered') { tabFiltered.classList.add('active'); filteredStatsDiv.classList.add('active'); }
             }
             
-            document.getElementById('tabSummary').addEventListener('click', () => setActiveTab('summary'));
-            document.getElementById('tabDetail').addEventListener('click', () => setActiveTab('detail'));
-            document.getElementById('tabFiltered').addEventListener('click', () => setActiveTab('filtered'));
+            const tabSummaryBtn = document.getElementById('tabSummary');
+            const tabDetailBtn = document.getElementById('tabDetail');
+            const tabFilteredBtn = document.getElementById('tabFiltered');
+            if (tabSummaryBtn) tabSummaryBtn.addEventListener('click', () => setActiveTab('summary'));
+            if (tabDetailBtn) tabDetailBtn.addEventListener('click', () => setActiveTab('detail'));
+            if (tabFilteredBtn) tabFilteredBtn.addEventListener('click', () => setActiveTab('filtered'));
             
             function formatFileSize(bytes) { if (bytes === 0) return '0 B'; const k = 1024; const sizes = ['B', 'KB', 'MB', 'GB']; const i = Math.floor(Math.log(bytes) / Math.log(k)); return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]; }
             
@@ -1283,7 +1362,7 @@
             
             function checkKeywordLength(keyword, minLen, maxLen, enableFilter) { if (!enableFilter) return true; const len = keyword.length; return len >= minLen && len <= maxLen; }
             
-            function parseCSVAndExtractFirstColumn(file, planName, unitName, encoding, skipRows, keepEmpty, keepGarbled, minLen, maxLen, enableLengthFilter) { return new Promise((resolve, reject) => { const extracted = []; const filteredRows = []; let rowIndex = 0; let totalRows = 0; let skippedRows = 0; let emptyRows = 0; let garbledRows = 0; let lengthFilteredRows = 0; Papa.parse(file, { header: false, skipEmptyLines: false, encoding: encoding, step: function(results, parser) { totalRows++; const row = results.data; if (rowIndex < skipRows) { skippedRows++; } else if (row && row.length > 0) { let keyword = row[0] ? String(row[0]).trim() : ''; keyword = keyword.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ''); let shouldKeep = true; let filterReason = ''; if (!keyword || keyword.length === 0) { shouldKeep = keepEmpty; filterReason = '空值'; if (!keepEmpty) emptyRows++; } else if (keyword.includes(' ')) { shouldKeep = keepGarbled; filterReason = '乱码字符( )'; if (!keepGarbled) garbledRows++; } else if (enableLengthFilter) { const keywordLen = keyword.length; if (keywordLen < minLen) { shouldKeep = false; filterReason = `长度过短(${keywordLen} < ${minLen})`; lengthFilteredRows++; } else if (keywordLen > maxLen) { shouldKeep = false; filterReason = `长度过长(${keywordLen} > ${maxLen})`; lengthFilteredRows++; } } if (shouldKeep) { extracted.push([planName, unitName, keyword]); } else { filteredRows.push({ fileName: file.name, rowNumber: rowIndex + 1, content: keyword.length > 80 ? keyword.substring(0, 80) + '...' : keyword, reason: filterReason }); } } else { if (!keepEmpty) emptyRows++; filteredRows.push({ fileName: file.name, rowNumber: rowIndex + 1, content: '(空行)', reason: '空值' }); } rowIndex++; if (rowIndex % 1000 === 0) { parser.pause(); setTimeout(() => parser.resume(), 0); } }, complete: function() { resolve({ extracted: extracted, filteredRows: filteredRows, stats: { totalRows: totalRows, skippedRows: skippedRows, extractedRows: extracted.length, emptyRows: emptyRows, garbledRows: garbledRows, lengthFilteredRows: lengthFilteredRows, filteredTotal: filteredRows.length, fileName: file.name, planName: planName, unitName: unitName } }); }, error: function(error) { reject(error); } }); }); }
+            function parseCSVAndExtractFirstColumn(file, planName, unitName, encoding, skipRows, keepEmpty, keepGarbled, minLen, maxLen, enableLengthFilter) { return new Promise((resolve, reject) => { const extracted = []; const filteredRows = []; let rowIndex = 0; let totalRows = 0; let skippedRows = 0; let emptyRows = 0; let garbledRows = 0; let lengthFilteredRows = 0; Papa.parse(file, { header: false, skipEmptyLines: false, encoding: encoding, step: function(results, parser) { totalRows++; const row = results.data; if (rowIndex < skipRows) { skippedRows++; } else if (row && row.length > 0) { let keyword = row[0] ? String(row[0]).trim() : ''; keyword = keyword.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ''); let shouldKeep = true; let filterReason = ''; if (!keyword || keyword.length === 0) { shouldKeep = keepEmpty; filterReason = '空值'; if (!keepEmpty) emptyRows++; } else if (keyword.includes(' ')) { shouldKeep = keepGarbled; filterReason = '乱码字符'; if (!keepGarbled) garbledRows++; } else if (enableLengthFilter) { const keywordLen = keyword.length; if (keywordLen < minLen) { shouldKeep = false; filterReason = `长度过短(${keywordLen} < ${minLen})`; lengthFilteredRows++; } else if (keywordLen > maxLen) { shouldKeep = false; filterReason = `长度过长(${keywordLen} > ${maxLen})`; lengthFilteredRows++; } } if (shouldKeep) { extracted.push([planName, unitName, keyword]); } else { filteredRows.push({ fileName: file.name, rowNumber: rowIndex + 1, content: keyword.length > 80 ? keyword.substring(0, 80) + '...' : keyword, reason: filterReason }); } } else { if (!keepEmpty) emptyRows++; filteredRows.push({ fileName: file.name, rowNumber: rowIndex + 1, content: '(空行)', reason: '空值' }); } rowIndex++; if (rowIndex % 1000 === 0) { parser.pause(); setTimeout(() => parser.resume(), 0); } }, complete: function() { resolve({ extracted: extracted, filteredRows: filteredRows, stats: { totalRows: totalRows, skippedRows: skippedRows, extractedRows: extracted.length, emptyRows: emptyRows, garbledRows: garbledRows, lengthFilteredRows: lengthFilteredRows, filteredTotal: filteredRows.length, fileName: file.name, planName: planName, unitName: unitName } }); }, error: function(error) { reject(error); } }); }); }
             
             function getCommonWords(filenames) { const prefixes = []; for (const filename of filenames) { let name = filename.replace('.csv', ''); if (name.includes('-')) { let prefix = name.split('-')[0].trim(); prefixes.push(prefix); } else { prefixes.push(name); } } if (prefixes.length === 0) return "合并"; const allSame = prefixes.every(prefix => prefix === prefixes[0]); return allSame ? prefixes[0] : (prefixes[0] || "合并"); }
             
@@ -1291,7 +1370,7 @@
             
             function showStatus(message, type) { statusDiv.style.display = 'block'; statusDiv.textContent = message; statusDiv.className = 'status ' + type; }
             
-            function displayStats(commonWords, skipRows, keepEmpty, keepGarbled, enableLengthFilter, minLen, maxLen) { const totalExtracted = fileStats.reduce((sum, s) => sum + (s.extractedRows || 0), 0); const totalRows = fileStats.reduce((sum, s) => sum + (s.totalRows || 0), 0); const totalSkipped = fileStats.reduce((sum, s) => sum + (s.skippedRows || 0), 0); const totalEmpty = fileStats.reduce((sum, s) => sum + (s.emptyRows || 0), 0); const totalGarbled = fileStats.reduce((sum, s) => sum + (s.garbledRows || 0), 0); const totalLengthFiltered = fileStats.reduce((sum, s) => sum + (s.lengthFilteredRows || 0), 0); const errorFiles = fileStats.filter(s => s.error); const expectedAfterSkip = totalRows - totalSkipped; const actualExtracted = totalExtracted; summaryStatsDiv.innerHTML = `<table style="width: 100%"><thead><tr><th>统计项</th><th>数值</th></tr></thead><tbody><tr><td>📊 处理的 CSV 文件数</td><td><strong>${fileStats.length}</strong></td></tr><tr><td>📝 CSV 文件总行数</td><td><strong>${totalRows.toLocaleString()}</strong> 行</td></tr><tr><td>⏭️ 跳过的行数（前 ${skipRows} 行）</td><td><strong>${totalSkipped.toLocaleString()}</strong> 行</td></tr><tr><td>📊 跳过后的应得行数</td><td><strong>${expectedAfterSkip.toLocaleString()}</strong> 行</td></tr><tr style="background: #fff5e6"><td>⚠️ 被过滤的空值行</td><td class="warning"><strong>${totalEmpty.toLocaleString()}</strong> 行 ${keepEmpty ? '(已选择保留)' : '(已过滤)'}</td></tr><tr style="background: #fff5e6"><td>⚠️ 被过滤的乱码行</td><td class="warning"><strong>${totalGarbled.toLocaleString()}</strong> 行 ${keepGarbled ? '(已选择保留)' : '(已过滤)'}</td></tr>${enableLengthFilter ? `<tr style="background: #fff5e6"><td>✂️ 被过滤的长度不符行（${minLen}~${maxLen}字符）</td><td class="warning"><strong>${totalLengthFiltered.toLocaleString()}</strong> 行</td></tr>` : ''}<tr><td>✅ 实际提取的关键词数</td><td><strong style="color: #48bb78;">${actualExtracted.toLocaleString()}</strong> 条</td></tr><tr><td>📉 提取率</td><td><strong>${expectedAfterSkip > 0 ? ((actualExtracted / expectedAfterSkip) * 100).toFixed(2) : 0}%</strong></td></tr>${errorFiles.length > 0 ? `<tr style="background: #fee2e2"><td>⚠️ 解析失败的文件</td><td class="warning">${errorFiles.length} 个</td></tr>` : ''}</tbody></table><div style="margin-top: 15px; padding: 10px; background: #eef2fa; border-radius: 8px;"><strong>💡 核对说明：</strong><br>应得行数 = 总行数 - 跳过行数<br>实际提取 = 应得行数 - 空值行 - 乱码行 ${enableLengthFilter ? '- 长度不符行' : ''}<br>${enableLengthFilter ? `<span style="color: #f59e0b;">✂️ 当前长度筛选范围：${minLen} ~ ${maxLen} 个字符</span><br>` : ''}</div>`; let detailHtml = '<table><thead><tr><th>文件名</th><th>计划</th><th>单元</th><th>总行数</th><th>跳过</th><th>空值</th><th>乱码</th><th>长度过滤</th><th>提取</th></tr></thead><tbody>'; for (const stat of fileStats) { detailHtml += `<tr><td>${escapeHtml(stat.fileName)}</td><td>${escapeHtml(stat.planName)}</td><td>${escapeHtml(stat.unitName)}</td><td>${formatNumber(stat.totalRows)}</td><td>${formatNumber(stat.skippedRows)}</td><td>${formatNumber(stat.emptyRows)}</td><td>${formatNumber(stat.garbledRows)}</td><td>${formatNumber(stat.lengthFilteredRows)}</td><td><strong>${formatNumber(stat.extractedRows)}</strong></td></tr>`; } detailHtml += '</tbody></table>'; detailStatsDiv.innerHTML = detailHtml; if (filteredDataDetails.length > 0) { let filteredHtml = '<table><thead><tr><th>文件名</th><th>行号</th><th>内容</th><th>过滤原因</th></tr></thead><tbody>'; for (const item of filteredDataDetails.slice(0, 500)) { filteredHtml += `<tr style="background: #f9fafb; border-bottom: 1px solid #e5e7eb;"><td>${escapeHtml(item.fileName)}</td><td>${item.rowNumber}</td><td>${escapeHtml(item.content)}</td><td style="color: #6b7280;">${item.reason}</td></tr>`; } if (filteredDataDetails.length > 500) { filteredHtml += `<tr><td colspan="4" style="text-align: center; color: #6b7280;">... 还有 ${filteredDataDetails.length - 500} 行被过滤的数据未显示</td></tr>`; } filteredHtml += '</tbody></table>'; filteredStatsDiv.innerHTML = filteredHtml; } else { filteredStatsDiv.innerHTML = '<p style="text-align: center; color: #718096;">没有被过滤的数据</p>'; } }
+            function displayStats(commonWords, skipRows, keepEmpty, keepGarbled, enableLengthFilter, minLen, maxLen) { const totalExtracted = fileStats.reduce((sum, s) => sum + (s.extractedRows || 0), 0); const totalRows = fileStats.reduce((sum, s) => sum + (s.totalRows || 0), 0); const totalSkipped = fileStats.reduce((sum, s) => sum + (s.skippedRows || 0), 0); const totalEmpty = fileStats.reduce((sum, s) => sum + (s.emptyRows || 0), 0); const totalGarbled = fileStats.reduce((sum, s) => sum + (s.garbledRows || 0), 0); const totalLengthFiltered = fileStats.reduce((sum, s) => sum + (s.lengthFilteredRows || 0), 0); const errorFiles = fileStats.filter(s => s.error); const expectedAfterSkip = totalRows - totalSkipped; const actualExtracted = totalExtracted; summaryStatsDiv.innerHTML = `<table style="width: 100%"><thead><tr><th>统计项</th><th>数值</th></tr></thead><tbody><tr><td>📊 处理的 CSV 文件数</td><td><strong>${fileStats.length}</strong></td></tr><tr><td>📝 CSV 文件总行数</td><td><strong>${totalRows.toLocaleString()}</strong> 行</td></tr><tr><td>⏭️ 跳过的行数（前 ${skipRows} 行）</td><td><strong>${totalSkipped.toLocaleString()}</strong> 行</td></tr><tr><td>📊 跳过后的应得行数</td><td><strong>${expectedAfterSkip.toLocaleString()}</strong> 行</td></tr><tr style="background: #fff5e6"><td>⚠️ 被过滤的空值行</td><td class="warning"><strong>${totalEmpty.toLocaleString()}</strong> 行 ${keepEmpty ? '(已选择保留)' : '(已过滤)'}</td></tr><tr style="background: #fff5e6"><td>⚠️ 被过滤的乱码行</td><td class="warning"><strong>${totalGarbled.toLocaleString()}</strong> 行 ${keepGarbled ? '(已选择保留)' : '(已过滤)'}</td></tr>${enableLengthFilter ? `<tr style="background: #fff5e6"><td>✂️ 被过滤的长度不符行（${minLen}~${maxLen}字符）</td><td class="warning"><strong>${totalLengthFiltered.toLocaleString()}</strong> 行</td></tr>` : ''}<tr><td>✅ 实际提取的关键词数</td><td><strong style="color: #48bb78;">${actualExtracted.toLocaleString()}</strong> 条</td></tr><tr><td>📉 提取率</td><td><strong>${expectedAfterSkip > 0 ? ((actualExtracted / expectedAfterSkip) * 100).toFixed(2) : 0}%</strong></td></tr>${errorFiles.length > 0 ? `<tr style="background: #fee2e2"><td>⚠️ 解析失败的文件</td><td class="warning">${errorFiles.length} 个</td></tr>` : ''}</tbody></table><div style="margin-top: 15px; padding: 10px; background: #eef2fa; border-radius: 8px;"><strong>💡 核对说明：</strong><br>应得行数 = 总行数 - 跳过行数<br>实际提取 = 应得行数 - 空值行 - 乱码行 ${enableLengthFilter ? '- 长度不符行' : ''}<br>${enableLengthFilter ? `<span style="color: #f59e0b;">✂️ 当前长度筛选范围：${minLen} ~ ${maxLen} 个字符</span><br>` : ''}</div>`; let detailHtml = '<table><thead><tr><th>文件名</th><th>计划</th><th>单元</th><th>总行数</th><th>跳过</th><th>空值</th><th>乱码</th><th>长度过滤</th><th>提取</th></tr></thead><tbody>'; for (const stat of fileStats) { detailHtml += `<tr><td>${escapeHtml(stat.fileName)}</td><td>${escapeHtml(stat.planName)}</td><td>${escapeHtml(stat.unitName)}</td><td>${formatNumber(stat.totalRows)}</td><td>${formatNumber(stat.skippedRows)}</td><td>${formatNumber(stat.emptyRows)}</td><td>${formatNumber(stat.garbledRows)}</td><td>${formatNumber(stat.lengthFilteredRows)}</td><td><strong>${formatNumber(stat.extractedRows)}</strong></td></tr>`; } detailHtml += '</tbody></table>'; detailStatsDiv.innerHTML = detailHtml; if (filteredDataDetails.length > 0) { let filteredHtml = '<table><thead><tr><th>文件名</th><th>行号</th><th>内容</th><th>过滤原因</th></tr></thead><tbody>'; for (const item of filteredDataDetails.slice(0, 500)) { filteredHtml += `<tr style="background: #f9fafb;"><td>${escapeHtml(item.fileName)}</td><td>${item.rowNumber}</td><td>${escapeHtml(item.content)}</td><td style="color: #6b7280;">${item.reason}</td></tr>`; } if (filteredDataDetails.length > 500) { filteredHtml += `<tr><td colspan="4" style="text-align: center;">... 还有 ${filteredDataDetails.length - 500} 行被过滤的数据未显示</td></tr>`; } filteredHtml += '</tbody></table>'; filteredStatsDiv.innerHTML = filteredHtml; } else { filteredStatsDiv.innerHTML = '<p style="text-align: center; color: #718096;">没有被过滤的数据</p>'; } }
             
             function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
             function formatNumber(num) { if (num === undefined || num === null) return '-'; if (typeof num === 'number') { return num.toLocaleString(); } return String(num); }
@@ -1302,11 +1381,11 @@
             
             function clearResults() { selectedFiles = []; mergedData = []; fileStats = []; filteredDataDetails = []; folderName = ""; resultTextarea.value = ''; folderInfoDiv.style.display = 'none'; fileListContainer.style.display = 'none'; fileListDiv.innerHTML = ''; statusDiv.style.display = 'none'; summaryStatsDiv.innerHTML = ''; detailStatsDiv.innerHTML = ''; filteredStatsDiv.innerHTML = ''; mergeBtn.disabled = true; downloadBtn.disabled = true; clearBlacklistData(); showStatus('结果已清空', 'success'); }
             
-            function clearBlacklistData() { blacklistWords = []; filteredData = []; isBlacklistApplied = false; blacklistInfo.style.display = 'none'; blacklistStats.style.display = 'none'; blacklistPreview.style.display = 'none'; filterResultInfo.style.display = 'none'; const blacklistFilteredSection = document.getElementById('blacklistFilteredSection'); if (blacklistFilteredSection) { blacklistFilteredSection.style.display = 'none'; } applyBlacklistBtn.disabled = true; downloadFilteredBtn.disabled = true; downloadUnfilteredBtn.disabled = true; }
+            function clearBlacklistData() { blacklistWords = []; filteredData = []; isBlacklistApplied = false; blacklistInfo.style.display = 'none'; blacklistStats.style.display = 'none'; blacklistPreview.style.display = 'none'; filterResultInfo.style.display = 'none'; const blacklistFilteredSection = document.getElementById('blacklistFilteredSection'); if (blacklistFilteredSection) { blacklistFilteredSection.style.display = 'none'; } if (applyBlacklistBtn) applyBlacklistBtn.disabled = true; if (downloadFilteredBtn) downloadFilteredBtn.disabled = true; if (downloadUnfilteredBtn) downloadUnfilteredBtn.disabled = true; if (blacklistFilterProgress) blacklistFilterProgress.style.display = 'none'; }
             
             async function handleBlacklistImport() { const input = document.createElement('input'); input.type = 'file'; input.multiple = true; input.accept = '.xlsx,.xls,.csv'; input.onchange = async (e) => { const files = Array.from(e.target.files); if (files.length === 0) return; await processBlacklistFiles(files); }; input.click(); }
             
-            async function processBlacklistFiles(files) { try { const allWords = new Set(); for (const file of files) { showStatus(`正在读取黑词文件: ${file.name}...`, ''); const extension = file.name.split('.').pop().toLowerCase(); if (extension === 'csv') { await parseBlacklistCSV(file, allWords); } else { await parseBlacklistExcel(file, allWords); } } blacklistWords = Array.from(allWords); updateBlacklistUI(); showStatus(`成功导入 ${files.length} 个文件，共 ${blacklistWords.length} 个黑词`, 'success'); if (mergedData.length > 0) { applyBlacklistBtn.disabled = false; } } catch (error) { showStatus('黑词文件解析失败: ' + error.message, 'error'); console.error(error); } }
+            async function processBlacklistFiles(files) { try { const allWords = new Set(); for (const file of files) { showStatus(`正在读取黑词文件: ${file.name}...`, ''); const extension = file.name.split('.').pop().toLowerCase(); if (extension === 'csv') { await parseBlacklistCSV(file, allWords); } else { await parseBlacklistExcel(file, allWords); } } blacklistWords = Array.from(allWords); updateBlacklistUI(); showStatus(`成功导入 ${files.length} 个文件，共 ${blacklistWords.length} 个黑词`, 'success'); if (mergedData.length > 0 && applyBlacklistBtn) { applyBlacklistBtn.disabled = false; } } catch (error) { showStatus('黑词文件解析失败: ' + error.message, 'error'); console.error(error); } }
             
             async function parseBlacklistCSV(file, wordsSet) { return new Promise((resolve, reject) => { Papa.parse(file, { header: false, skipEmptyLines: true, encoding: 'gbk', complete: function(results) { results.data.forEach(row => { if (row && row.length > 0) { row.forEach(cell => { if (cell) { const word = String(cell).trim(); if (word) wordsSet.add(word); } }); } }); resolve(); }, error: reject }); }); }
             
@@ -1314,32 +1393,161 @@
             
             function updateBlacklistUI() { blacklistInfo.style.display = 'block'; blacklistInfo.innerHTML = `<strong>📋 已导入黑词文件：</strong> ${blacklistWords.length} 个黑词<br>`; blacklistStats.style.display = 'flex'; document.getElementById('blacklistCount').textContent = blacklistWords.length; document.getElementById('filteredCount').textContent = isBlacklistApplied ? filteredData.length : 0; document.getElementById('remainingCount').textContent = isBlacklistApplied ? (mergedData.length - filteredData.length) : mergedData.length; blacklistPreview.style.display = 'block'; const previewWords = blacklistWords.slice(0, 50); let previewHtml = previewWords.map(word => `<span class="blacklist-word">${escapeHtml(word)}</span>`).join(''); if (blacklistWords.length > 50) { previewHtml += `<span style="color: #718096; margin-left: 10px;">...还有 ${blacklistWords.length - 50} 个黑词</span>`; } blacklistPreview.innerHTML = previewHtml; }
             
-            function applyBlacklistFilter() { if (blacklistWords.length === 0) { showStatus('请先导入黑词文件', 'error'); return; } if (mergedData.length === 0) { showStatus('请先合并CSV文件', 'error'); return; } filteredData = []; const keywordIndex = 2; mergedData.forEach((row, index) => { const keyword = String(row[keywordIndex] || '').toLowerCase(); let isBlacklisted = false; for (const word of blacklistWords) { if (keyword.includes(word.toLowerCase())) { isBlacklisted = true; filteredData.push({ rowIndex: index, row: row, matchedWord: word }); break; } } }); isBlacklistApplied = true; updateBlacklistUI(); filterResultInfo.style.display = 'block'; filterResultInfo.className = 'filter-result-info filtered'; filterResultInfo.innerHTML = `<strong>🚫 黑词过滤完成</strong><br>原始关键词数量：<strong>${mergedData.length.toLocaleString()}</strong> 条<br>包含黑词已过滤：<strong style="color: #f56565;">${filteredData.length.toLocaleString()}</strong> 条<br>过滤后剩余：<strong style="color: #48bb78;">${(mergedData.length - filteredData.length).toLocaleString()}</strong> 条<br>过滤率：<strong>${((filteredData.length / mergedData.length) * 100).toFixed(2)}%</strong>`; updateBlacklistFilteredTable(); downloadFilteredBtn.disabled = false; downloadUnfilteredBtn.disabled = false; showStatus(`黑词过滤完成！已过滤 ${filteredData.length} 条关键词`, 'success'); }
+            // 升级版黑词过滤 - 分批异步处理 + 进度条
+            async function applyBlacklistFilter() { 
+                if (blacklistWords.length === 0) { 
+                    showStatus('请先导入黑词文件', 'error'); 
+                    return; 
+                } 
+                if (mergedData.length === 0) { 
+                    showStatus('请先合并CSV文件', 'error'); 
+                    return; 
+                }
+                if (isBlacklistFiltering) {
+                    showStatus('正在过滤中，请稍候...', 'error');
+                    return;
+                }
+                
+                isBlacklistFiltering = true;
+                if (applyBlacklistBtn) applyBlacklistBtn.disabled = true;
+                if (blacklistFilterProgress) blacklistFilterProgress.style.display = 'block';
+                if (blacklistFilterProgressFill) blacklistFilterProgressFill.style.width = '0%';
+                if (blacklistFilterProgressText) blacklistFilterProgressText.innerHTML = '准备过滤...';
+                
+                filteredData = []; 
+                const keywordIndex = 2; 
+                const totalCount = mergedData.length;
+                const BATCH_SIZE = 5000;
+                let processedCount = 0;
+                let newFilteredData = [];
+                
+                function processBatch(startIndex) {
+                    return new Promise((resolve) => {
+                        const endIndex = Math.min(startIndex + BATCH_SIZE, totalCount);
+                        
+                        for (let index = startIndex; index < endIndex; index++) {
+                            const row = mergedData[index];
+                            const keyword = String(row[keywordIndex] || '').toLowerCase();
+                            let isBlacklisted = false;
+                            let matchedWord = '';
+                            for (const word of blacklistWords) {
+                                if (keyword.includes(word.toLowerCase())) {
+                                    isBlacklisted = true;
+                                    matchedWord = word;
+                                    break;
+                                }
+                            }
+                            if (isBlacklisted) {
+                                newFilteredData.push({ rowIndex: index, row: row, matchedWord: matchedWord });
+                            }
+                        }
+                        
+                        processedCount = endIndex;
+                        const percent = Math.round((processedCount / totalCount) * 100);
+                        if (blacklistFilterProgressFill) blacklistFilterProgressFill.style.width = `${percent}%`;
+                        if (blacklistFilterProgressText) blacklistFilterProgressText.innerHTML = `过滤中: ${processedCount.toLocaleString()} / ${totalCount.toLocaleString()} (${percent}%)`;
+                        
+                        if (processedCount < totalCount) {
+                            setTimeout(() => resolve(processBatch(processedCount)), 10);
+                        } else {
+                            resolve(newFilteredData);
+                        }
+                    });
+                }
+                
+                try {
+                    const result = await processBatch(0);
+                    filteredData = result;
+                    isBlacklistApplied = true;
+                    
+                    if (blacklistFilterProgressFill) blacklistFilterProgressFill.style.width = '100%';
+                    if (blacklistFilterProgressText) blacklistFilterProgressText.innerHTML = `过滤完成！共 ${filteredData.length.toLocaleString()} 条被过滤`;
+                    
+                    updateBlacklistUI(); 
+                    if (filterResultInfo) {
+                        filterResultInfo.style.display = 'block'; 
+                        filterResultInfo.className = 'filter-result-info filtered'; 
+                        filterResultInfo.innerHTML = `<strong>🚫 黑词过滤完成</strong><br>原始关键词数量：<strong>${mergedData.length.toLocaleString()}</strong> 条<br>包含黑词已过滤：<strong style="color: #f56565;">${filteredData.length.toLocaleString()}</strong> 条<br>过滤后剩余：<strong style="color: #48bb78;">${(mergedData.length - filteredData.length).toLocaleString()}</strong> 条<br>过滤率：<strong>${((filteredData.length / mergedData.length) * 100).toFixed(2)}%</strong>`; 
+                    }
+                    updateBlacklistFilteredTable(); 
+                    if (downloadFilteredBtn) downloadFilteredBtn.disabled = false; 
+                    if (downloadUnfilteredBtn) downloadUnfilteredBtn.disabled = false; 
+                    showStatus(`黑词过滤完成！已过滤 ${filteredData.length} 条关键词`, 'success'); 
+                } catch (error) {
+                    showStatus(`过滤出错: ${error.message}`, 'error');
+                } finally {
+                    isBlacklistFiltering = false;
+                    if (applyBlacklistBtn) applyBlacklistBtn.disabled = false;
+                    setTimeout(() => {
+                        if (blacklistFilterProgress) blacklistFilterProgress.style.display = 'none';
+                    }, 2000);
+                }
+            }
             
-            function updateBlacklistFilteredTable() { const blacklistFilteredSection = document.getElementById('blacklistFilteredSection'); const blacklistFilteredTable = document.getElementById('blacklistFilteredTable'); if (filteredData.length === 0) { blacklistFilteredSection.style.display = 'none'; return; } blacklistFilteredSection.style.display = 'block'; let tableHtml = ''; const displayCount = Math.min(500, filteredData.length); for (let i = 0; i < displayCount; i++) { const item = filteredData[i]; const keywordIndex = 2; const keyword = item.row[keywordIndex] || ''; tableHtml += `<tr class="filtered-row"><td style="padding: 6px 8px;">${item.rowIndex + 1}</td><td style="padding: 6px 8px;">${escapeHtml(String(keyword))}</td><td style="padding: 6px 8px; color: #f56565;">${escapeHtml(item.matchedWord)}</td></tr>`; } if (filteredData.length > 500) { tableHtml += `<tr><td colspan="3" style="text-align: center; color: #f59e0b;">... 还有 ${filteredData.length - 500} 条被黑词过滤的数据未显示</td></tr>`; } blacklistFilteredTable.innerHTML = tableHtml; }
+            function updateBlacklistFilteredTable() { const blacklistFilteredSection = document.getElementById('blacklistFilteredSection'); const blacklistFilteredTable = document.getElementById('blacklistFilteredTable'); if (!blacklistFilteredSection || !blacklistFilteredTable) return; if (filteredData.length === 0) { blacklistFilteredSection.style.display = 'none'; return; } blacklistFilteredSection.style.display = 'block'; let tableHtml = ''; const displayCount = Math.min(500, filteredData.length); for (let i = 0; i < displayCount; i++) { const item = filteredData[i]; const keywordIndex = 2; const keyword = item.row[keywordIndex] || ''; tableHtml += `<tr class="filtered-row"><td style="padding: 6px 8px;">${item.rowIndex + 1}</td><td style="padding: 6px 8px;">${escapeHtml(String(keyword))}</td><td style="padding: 6px 8px; color: #f56565;">${escapeHtml(item.matchedWord)}</td></tr>`; } if (filteredData.length > 500) { tableHtml += `<tr><td colspan="3" style="text-align: center; color: #f59e0b;">... 还有 ${filteredData.length - 500} 条被黑词过滤的数据未显示</td></tr>`; } blacklistFilteredTable.innerHTML = tableHtml; }
             
-            function downloadFilteredCSV() { if (!isBlacklistApplied || mergedData.length === 0) { showStatus('没有可下载的数据', 'error'); return; } const keywordIndex = 2; const filteredOutIndices = new Set(filteredData.map(item => item.rowIndex)); const remainingData = mergedData.filter((_, index) => !filteredOutIndices.has(index)); if (remainingData.length === 0) { showStatus('过滤后没有剩余数据', 'error'); return; } let csvContent; if (toolType === 'highfreq') { csvContent = ['计划,单元,关键词', ...remainingData.map(row => row.join(','))].join('\n'); } else { csvContent = ['关键词', ...remainingData.map(row => row[2])].join('\n'); } const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement('a'); const url = URL.createObjectURL(blob); link.setAttribute('href', url); link.setAttribute('download', `${folderName || '合并结果'}_${toolType}_过黑词版.csv`); link.click(); URL.revokeObjectURL(url); showStatus('过黑词版文件已开始下载', 'success'); }
+            function downloadFilteredCSV() { 
+                if (!isBlacklistApplied || mergedData.length === 0) { 
+                    showStatus('没有可下载的数据', 'error'); 
+                    return; 
+                } 
+                const filteredOutIndices = new Set(filteredData.map(item => item.rowIndex)); 
+                const remainingData = mergedData.filter((_, index) => !filteredOutIndices.has(index)); 
+                if (remainingData.length === 0) { 
+                    showStatus('过滤后没有剩余数据', 'error'); 
+                    return; 
+                } 
+                const headers = ['计划', '单元', '关键词']; 
+                const csvContent = [headers.join(','), ...remainingData.map(row => row.join(','))].join('\n'); 
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }); 
+                const link = document.createElement('a'); 
+                const url = URL.createObjectURL(blob); 
+                link.setAttribute('href', url); 
+                link.setAttribute('download', `${folderName || '合并结果'}_${toolType}_过黑词版.csv`); 
+                link.click(); 
+                URL.revokeObjectURL(url); 
+                showStatus('过黑词版文件已开始下载（保留计划/单元/关键词）', 'success'); 
+            }
             
-            function downloadUnfilteredCSV() { if (mergedData.length === 0) { showStatus('没有可下载的数据', 'error'); return; } let csvContent; if (toolType === 'highfreq') { csvContent = ['计划,单元,关键词', ...mergedData.map(row => row.join(','))].join('\n'); } else { csvContent = ['关键词', ...mergedData.map(row => row[2])].join('\n'); } const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement('a'); const url = URL.createObjectURL(blob); link.setAttribute('href', url); link.setAttribute('download', `${folderName || '合并结果'}_${toolType}_未过黑词版.csv`); link.click(); URL.revokeObjectURL(url); showStatus('未过黑词版文件已开始下载', 'success'); }
+            function downloadUnfilteredCSV() { 
+                if (mergedData.length === 0) { 
+                    showStatus('没有可下载的数据', 'error'); 
+                    return; 
+                } 
+                const headers = ['计划', '单元', '关键词']; 
+                const csvContent = [headers.join(','), ...mergedData.map(row => row.join(','))].join('\n'); 
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' }); 
+                const link = document.createElement('a'); 
+                const url = URL.createObjectURL(blob); 
+                link.setAttribute('href', url); 
+                link.setAttribute('download', `${folderName || '合并结果'}_${toolType}_未过黑词版.csv`); 
+                link.click(); 
+                URL.revokeObjectURL(url); 
+                showStatus('未过黑词版文件已开始下载', 'success'); 
+            }
             
-            dropZone.addEventListener('click', handleFolderSelect);
-            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('drag-over'); });
-            dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFolderSelect(); });
-            mergeBtn.addEventListener('click', mergeCSVFiles);
-            clearBtn.addEventListener('click', clearResults);
-            downloadBtn.addEventListener('click', downloadCSV);
-            blacklistDropZone.addEventListener('click', handleBlacklistImport);
-            blacklistDropZone.addEventListener('dragover', (e) => { e.preventDefault(); blacklistDropZone.classList.add('drag-over'); });
-            blacklistDropZone.addEventListener('dragleave', () => { blacklistDropZone.classList.remove('drag-over'); });
-            blacklistDropZone.addEventListener('drop', (e) => { e.preventDefault(); blacklistDropZone.classList.remove('drag-over'); const files = e.dataTransfer.files; if (files.length > 0) { const file = files[0]; const extension = file.name.split('.').pop().toLowerCase(); if (['xlsx', 'xls', 'csv'].includes(extension)) { processBlacklistFiles(files); } else { showStatus('请上传 Excel 或 CSV 格式的文件', 'error'); } } });
-            applyBlacklistBtn.addEventListener('click', applyBlacklistFilter);
-            clearBlacklistBtn.addEventListener('click', () => { clearBlacklistData(); showStatus('黑词已清除', 'success'); });
-            downloadFilteredBtn.addEventListener('click', downloadFilteredCSV);
-            downloadUnfilteredBtn.addEventListener('click', downloadUnfilteredCSV);
+            if (dropZone) {
+                dropZone.addEventListener('click', handleFolderSelect);
+                dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+                dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('drag-over'); });
+                dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('drag-over'); handleFolderSelect(); });
+            }
+            if (mergeBtn) mergeBtn.addEventListener('click', mergeCSVFiles);
+            if (clearBtn) clearBtn.addEventListener('click', clearResults);
+            if (downloadBtn) downloadBtn.addEventListener('click', downloadCSV);
+            if (blacklistDropZone) {
+                blacklistDropZone.addEventListener('click', handleBlacklistImport);
+                blacklistDropZone.addEventListener('dragover', (e) => { e.preventDefault(); blacklistDropZone.classList.add('drag-over'); });
+                blacklistDropZone.addEventListener('dragleave', () => { blacklistDropZone.classList.remove('drag-over'); });
+                blacklistDropZone.addEventListener('drop', (e) => { e.preventDefault(); blacklistDropZone.classList.remove('drag-over'); const files = e.dataTransfer.files; if (files.length > 0) { processBlacklistFiles(files); } });
+            }
+            if (applyBlacklistBtn) applyBlacklistBtn.addEventListener('click', applyBlacklistFilter);
+            if (clearBlacklistBtn) clearBlacklistBtn.addEventListener('click', () => { clearBlacklistData(); showStatus('黑词已清除', 'success'); });
+            if (downloadFilteredBtn) downloadFilteredBtn.addEventListener('click', downloadFilteredCSV);
+            if (downloadUnfilteredBtn) downloadUnfilteredBtn.addEventListener('click', downloadUnfilteredCSV);
         }
         
-        window.originalToolInitializer = initOriginalTool;
+        window.originalToolInitializer = initOriginalToolUpgraded;
     </script>
 </body>
-</html>
+</html></html>
