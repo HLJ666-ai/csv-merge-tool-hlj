@@ -411,6 +411,7 @@
         button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 107, 107, 0.35); }
         button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
         .btn-secondary { background: linear-gradient(135deg, var(--secondary) 0%, var(--green) 100%); }
+        .btn-filtered-download { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
         .result-area { margin-top: 25px; }
         .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         textarea { width: 100%; height: 280px; font-family: 'Space Mono', 'Courier New', monospace; font-size: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px; resize: vertical; transition: border-color 0.3s ease, box-shadow 0.3s ease; background: rgba(255,255,255,0.9); color: var(--text-primary); }
@@ -460,6 +461,7 @@
         .download-options { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 18px; }
         .btn-filtered { background: linear-gradient(135deg, var(--primary) 0%, #e53e3e 100%); }
         .btn-unfiltered { background: linear-gradient(135deg, var(--secondary) 0%, var(--green) 100%); }
+        .btn-download-filtered-only { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
         .filter-result-info { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-left: 4px solid var(--green); padding: 15px; border-radius: var(--radius-sm); margin-bottom: 15px; font-size: 0.9rem; color: #065f46; }
         .filter-result-info.filtered { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); border-left-color: var(--primary); color: #991b1b; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -652,7 +654,7 @@
                     </div>
                 </div>
                 <div class="info-box">
-                    <strong>💡 使用提示：</strong> 点击上方卡片选择对应的工具。前三个工具的黑词过滤已升级为分批处理+进度条，支持百万级数据。
+                    <strong>💡 使用提示：</strong> 点击上方卡片选择对应的工具。前三个工具的黑词过滤已升级为分批处理+进度条，支持百万级数据。每个工具都支持下载被过滤的数据。
                 </div>
             </div>
 
@@ -824,6 +826,7 @@
                     <div class="download-options">
                         <button id="downloadFilteredBtn" class="btn-filtered" disabled>💾 下载过黑词版（保留计划/单元/关键词）</button>
                         <button id="downloadUnfilteredBtn" class="btn-unfiltered" disabled>💾 下载未过黑词版（原始）</button>
+                        <button id="downloadFilteredOnlyBtn" class="btn-download-filtered-only" disabled>💾 下载被过滤数据</button>
                     </div>
                 </div>
             `;
@@ -874,6 +877,7 @@
                     <button id="startFilterBtn" disabled style="background:#6B5B95;">🔍 开始过滤黑词</button>
                     <button id="clearAllBtn" class="btn-secondary">🗑️ 清空所有数据</button>
                     <button id="downloadResultBtn" disabled style="background:#88B04B;">💾 下载过滤后CSV（保留原始所有列）</button>
+                    <button id="downloadFilteredOnlyBtn" disabled class="btn-download-filtered-only">💾 下载被过滤数据（保留原始格式）</button>
                 </div>
                 <div id="filterStatus" class="status" style="display:none;"></div>
                 <div id="filterResultArea" style="margin-top:20px; display:none;">
@@ -902,6 +906,7 @@
             const clearOriginBtn = document.getElementById('clearOriginBtn');
             const clearBlacklistOnlyBtn = document.getElementById('clearBlacklistOnlyBtn');
             const downloadBtn = document.getElementById('downloadResultBtn');
+            const downloadFilteredOnlyBtn = document.getElementById('downloadFilteredOnlyBtn');
             const statusDiv = document.getElementById('filterStatus');
             const resultArea = document.getElementById('filterResultArea');
             const filteredList = document.getElementById('filteredItemsList');
@@ -993,7 +998,7 @@
                             if (j === keywordColIndex) {
                                 previewHtml += `<td style="background:#fff0f0;"><strong>${escapeHtml(String(cell).substring(0, 40))}</strong></td>`;
                             } else {
-                                previewHtml += `<td>${escapeHtml(String(cell).substring(0, 30))}</td>`;
+                                previewHtml += `<td>${escapeHtml(String(cell).substring(0, 30))}<td>`;
                             }
                         }
                         previewHtml += '</tr>';
@@ -1017,11 +1022,11 @@
                 originPreview.style.display = 'none';
                 originPreview.innerHTML = '';
                 performanceWarning.style.display = 'none';
-                // 清除过滤结果区域
                 resultArea.style.display = 'none';
                 filteredRecords = [];
                 remainingData = [];
-                downloadBtn.disabled = true;
+                if (downloadBtn) downloadBtn.disabled = true;
+                if (downloadFilteredOnlyBtn) downloadFilteredOnlyBtn.disabled = true;
                 if (startBtn) startBtn.disabled = true;
                 checkReady();
                 updateClearButtonsVisibility();
@@ -1034,11 +1039,11 @@
                 blacklistLoaded = false;
                 blacklistPreview.style.display = 'none';
                 blacklistPreview.innerHTML = '';
-                // 清除过滤结果区域
                 resultArea.style.display = 'none';
                 filteredRecords = [];
                 remainingData = [];
-                downloadBtn.disabled = true;
+                if (downloadBtn) downloadBtn.disabled = true;
+                if (downloadFilteredOnlyBtn) downloadFilteredOnlyBtn.disabled = true;
                 if (startBtn) startBtn.disabled = true;
                 checkReady();
                 updateClearButtonsVisibility();
@@ -1185,6 +1190,7 @@
                     `;
                     
                     if (downloadBtn) downloadBtn.disabled = false;
+                    if (downloadFilteredOnlyBtn && filteredRecords.length > 0) downloadFilteredOnlyBtn.disabled = false;
                     showMsg(`过滤完成！已过滤 ${filteredRecords.length.toLocaleString()} 条，剩余 ${remainingData.length.toLocaleString()} 条`, 'success');
                     
                 } catch (error) {
@@ -1216,6 +1222,7 @@
                 performanceWarning.style.display = 'none';
                 if (startBtn) startBtn.disabled = true; 
                 if (downloadBtn) downloadBtn.disabled = true;
+                if (downloadFilteredOnlyBtn) downloadFilteredOnlyBtn.disabled = true;
                 progressContainer.style.display = 'none';
                 updateClearButtonsVisibility();
                 showMsg("已清空所有数据", 'success');
@@ -1248,6 +1255,34 @@
                 showMsg(`已下载 ${remainingData.length.toLocaleString()} 条关键词（保留原始所有列）`, 'success');
             }
             
+            // 新增：下载被过滤的数据（保留原始格式）
+            function downloadFilteredOnly() {
+                if(filteredRecords.length === 0) { showMsg("没有被过滤的数据可下载",'error'); return; }
+                
+                let csvRows = [];
+                if (originHeader && originHeader.length) {
+                    csvRows.push(originHeader.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(','));
+                } else {
+                    csvRows.push('"关键词"');
+                }
+                
+                for (let i = 0; i < filteredRecords.length; i++) {
+                    const row = filteredRecords[i].fullRow;
+                    const escapedRow = row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',');
+                    csvRows.push(escapedRow);
+                }
+                
+                const csvContent = csvRows.join('\n');
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.download = `${originFileName.replace(/\.[^/.]+$/, '')}_被过滤数据.csv`;
+                link.click();
+                URL.revokeObjectURL(url);
+                showMsg(`已下载 ${filteredRecords.length.toLocaleString()} 条被过滤数据（保留原始所有列）`, 'success');
+            }
+            
             function escapeHtml(str) { 
                 if (!str) return '';
                 return String(str).replace(/[&<>]/g, function(m){
@@ -1273,6 +1308,7 @@
             if (clearOriginBtn) clearOriginBtn.addEventListener('click', clearOriginOnly);
             if (clearBlacklistOnlyBtn) clearBlacklistOnlyBtn.addEventListener('click', clearBlacklistOnly);
             if (downloadBtn) downloadBtn.addEventListener('click', downloadFiltered);
+            if (downloadFilteredOnlyBtn) downloadFilteredOnlyBtn.addEventListener('click', downloadFilteredOnly);
         }
         
         // ======================== 原有三个工具的初始化（升级黑词过滤为分批处理） ========================
@@ -1324,6 +1360,7 @@
             const clearBlacklistBtn = document.getElementById('clearBlacklistBtn');
             const downloadFilteredBtn = document.getElementById('downloadFilteredBtn');
             const downloadUnfilteredBtn = document.getElementById('downloadUnfilteredBtn');
+            const downloadFilteredOnlyBtn = document.getElementById('downloadFilteredOnlyBtn');
             const filterResultInfo = document.getElementById('filterResultInfo');
             const blacklistFilterProgress = document.getElementById('blacklistFilterProgress');
             const blacklistFilterProgressFill = document.getElementById('blacklistFilterProgressFill');
@@ -1381,7 +1418,7 @@
             
             function clearResults() { selectedFiles = []; mergedData = []; fileStats = []; filteredDataDetails = []; folderName = ""; resultTextarea.value = ''; folderInfoDiv.style.display = 'none'; fileListContainer.style.display = 'none'; fileListDiv.innerHTML = ''; statusDiv.style.display = 'none'; summaryStatsDiv.innerHTML = ''; detailStatsDiv.innerHTML = ''; filteredStatsDiv.innerHTML = ''; mergeBtn.disabled = true; downloadBtn.disabled = true; clearBlacklistData(); showStatus('结果已清空', 'success'); }
             
-            function clearBlacklistData() { blacklistWords = []; filteredData = []; isBlacklistApplied = false; blacklistInfo.style.display = 'none'; blacklistStats.style.display = 'none'; blacklistPreview.style.display = 'none'; filterResultInfo.style.display = 'none'; const blacklistFilteredSection = document.getElementById('blacklistFilteredSection'); if (blacklistFilteredSection) { blacklistFilteredSection.style.display = 'none'; } if (applyBlacklistBtn) applyBlacklistBtn.disabled = true; if (downloadFilteredBtn) downloadFilteredBtn.disabled = true; if (downloadUnfilteredBtn) downloadUnfilteredBtn.disabled = true; if (blacklistFilterProgress) blacklistFilterProgress.style.display = 'none'; }
+            function clearBlacklistData() { blacklistWords = []; filteredData = []; isBlacklistApplied = false; blacklistInfo.style.display = 'none'; blacklistStats.style.display = 'none'; blacklistPreview.style.display = 'none'; filterResultInfo.style.display = 'none'; const blacklistFilteredSection = document.getElementById('blacklistFilteredSection'); if (blacklistFilteredSection) { blacklistFilteredSection.style.display = 'none'; } if (applyBlacklistBtn) applyBlacklistBtn.disabled = true; if (downloadFilteredBtn) downloadFilteredBtn.disabled = true; if (downloadUnfilteredBtn) downloadUnfilteredBtn.disabled = true; if (downloadFilteredOnlyBtn) downloadFilteredOnlyBtn.disabled = true; if (blacklistFilterProgress) blacklistFilterProgress.style.display = 'none'; }
             
             async function handleBlacklistImport() { const input = document.createElement('input'); input.type = 'file'; input.multiple = true; input.accept = '.xlsx,.xls,.csv'; input.onchange = async (e) => { const files = Array.from(e.target.files); if (files.length === 0) return; await processBlacklistFiles(files); }; input.click(); }
             
@@ -1471,7 +1508,8 @@
                     }
                     updateBlacklistFilteredTable(); 
                     if (downloadFilteredBtn) downloadFilteredBtn.disabled = false; 
-                    if (downloadUnfilteredBtn) downloadUnfilteredBtn.disabled = false; 
+                    if (downloadUnfilteredBtn) downloadUnfilteredBtn.disabled = false;
+                    if (downloadFilteredOnlyBtn && filteredData.length > 0) downloadFilteredOnlyBtn.disabled = false;
                     showStatus(`黑词过滤完成！已过滤 ${filteredData.length} 条关键词`, 'success'); 
                 } catch (error) {
                     showStatus(`过滤出错: ${error.message}`, 'error');
@@ -1526,6 +1564,25 @@
                 showStatus('未过黑词版文件已开始下载', 'success'); 
             }
             
+            // 新增：下载被过滤的数据（保留计划/单元/关键词三列）
+            function downloadFilteredOnlyCSV() {
+                if (!isBlacklistApplied || filteredData.length === 0) {
+                    showStatus('没有被过滤的数据可下载', 'error');
+                    return;
+                }
+                const headers = ['计划', '单元', '关键词'];
+                const filteredRows = filteredData.map(item => item.row);
+                const csvContent = [headers.join(','), ...filteredRows.map(row => row.join(','))].join('\n');
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', `${folderName || '合并结果'}_${toolType}_被过滤数据.csv`);
+                link.click();
+                URL.revokeObjectURL(url);
+                showStatus(`已下载 ${filteredData.length} 条被过滤数据（保留计划/单元/关键词）`, 'success');
+            }
+            
             if (dropZone) {
                 dropZone.addEventListener('click', handleFolderSelect);
                 dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('drag-over'); });
@@ -1545,9 +1602,10 @@
             if (clearBlacklistBtn) clearBlacklistBtn.addEventListener('click', () => { clearBlacklistData(); showStatus('黑词已清除', 'success'); });
             if (downloadFilteredBtn) downloadFilteredBtn.addEventListener('click', downloadFilteredCSV);
             if (downloadUnfilteredBtn) downloadUnfilteredBtn.addEventListener('click', downloadUnfilteredCSV);
+            if (downloadFilteredOnlyBtn) downloadFilteredOnlyBtn.addEventListener('click', downloadFilteredOnlyCSV);
         }
         
         window.originalToolInitializer = initOriginalToolUpgraded;
     </script>
 </body>
-</html></html>
+</html>
