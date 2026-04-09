@@ -1480,16 +1480,16 @@
             
             function showStatus(message, type) { statusDiv.style.display = 'block'; statusDiv.textContent = message; statusDiv.className = 'status ' + type; }
             
-            function displayStats(commonWords, skipRows, keepEmpty, keepGarbled, enableLengthFilter, minLen, maxLen) { const totalExtracted = fileStats.reduce((sum, s) => sum + (s.extractedRows || 0), 0); const totalRows = fileStats.reduce((sum, s) => sum + (s.totalRows || 0), 0); const totalSkipped = fileStats.reduce((sum, s) => sum + (s.skippedRows || 0), 0); const totalEmpty = fileStats.reduce((sum, s) => sum + (s.emptyRows || 0), 0); const totalGarbled = fileStats.reduce((sum, s) => sum + (s.garbledRows || 0), 0); const totalLengthFiltered = fileStats.reduce((sum, s) => sum + (s.lengthFilteredRows || 0), 0); const errorFiles = fileStats.filter(s => s.error); const expectedAfterSkip = totalRows - totalSkipped; const actualExtracted = totalExtracted; summaryStatsDiv.innerHTML = `<table style="width: 100%"><thead><tr><th>统计项</th><th>数值</th></tr></thead><tbody><tr><td>📊 处理的 CSV 文件数</td>。<strong>${fileStats.length}</strong></td></tr>
-                    <tr>。<📝 CSV 文件总行数</td>。<strong>${totalRows.toLocaleString()}</strong> 行</td></tr>
-                    <tr>。<⏭️ 跳过的行数（前 ${skipRows} 行）</td>。<strong>${totalSkipped.toLocaleString()}</strong> 行</td></tr>
-                    <tr>。<📊 跳过后的应得行数</td>。<strong>${expectedAfterSkip.toLocaleString()}</strong> 行</td></tr>
-                    <tr style="background: #fff5e6">。<⚠️ 被过滤的空值行</td><td class="warning"><strong>${totalEmpty.toLocaleString()}</strong> 行 ${keepEmpty ? '(已选择保留)' : '(已过滤)'}</td></tr>
-                    <tr style="background: #fff5e6">。<⚠️ 被过滤的乱码行</td><td class="warning"><strong>${totalGarbled.toLocaleString()}</strong> 行 ${keepGarbled ? '(已选择保留)' : '(已过滤)'}</td></tr>
-                    ${enableLengthFilter ? `<tr style="background: #fff5e6">。<✂️ 被过滤的长度不符行（${minLen}~${maxLen}字符）</td><td class="warning"><strong>${totalLengthFiltered.toLocaleString()}</strong> 行</td></tr>` : ''}
-                    <tr>。<✅ 实际提取的关键词数</td>。<strong style="color: #48bb78;">${actualExtracted.toLocaleString()}</strong> 条</td></tr>
-                    <tr>。<📉 提取率</td>。<strong>${expectedAfterSkip > 0 ? ((actualExtracted / expectedAfterSkip) * 100).toFixed(2) : 0}%</strong></td></tr>
-                    ${errorFiles.length > 0 ? `<tr style="background: #fee2e2">。<⚠️ 解析失败的文件</td><td class="warning">${errorFiles.length} 个</td></tr>` : ''}
+            function displayStats(commonWords, skipRows, keepEmpty, keepGarbled, enableLengthFilter, minLen, maxLen) { const totalExtracted = fileStats.reduce((sum, s) => sum + (s.extractedRows || 0), 0); const totalRows = fileStats.reduce((sum, s) => sum + (s.totalRows || 0), 0); const totalSkipped = fileStats.reduce((sum, s) => sum + (s.skippedRows || 0), 0); const totalEmpty = fileStats.reduce((sum, s) => sum + (s.emptyRows || 0), 0); const totalGarbled = fileStats.reduce((sum, s) => sum + (s.garbledRows || 0), 0); const totalLengthFiltered = fileStats.reduce((sum, s) => sum + (s.lengthFilteredRows || 0), 0); const errorFiles = fileStats.filter(s => s.error); const expectedAfterSkip = totalRows - totalSkipped; const actualExtracted = totalExtracted; summaryStatsDiv.innerHTML = `<table style="width: 100%"><thead><tr><th>统计项</th><th>数值</th></tr></thead><tbody><tr><td>📊 处理的 CSV 文件数</td><td><strong>${fileStats.length}</strong></td></tr>
+                    <tr><td>📝 CSV 文件总行数</td><td><strong>${totalRows.toLocaleString()}</strong> 行</td></tr>
+                    <tr><td>⏭️ 跳过的行数（前 ${skipRows} 行）</td><td><strong>${totalSkipped.toLocaleString()}</strong> 行</td></tr>
+                    <tr><td>📊 跳过后的应得行数</td><td><strong>${expectedAfterSkip.toLocaleString()}</strong> 行</td></tr>
+                    <tr style="background: #fff5e6"><td>⚠️ 被过滤的空值行</td><td class="warning"><strong>${totalEmpty.toLocaleString()}</strong> 行 ${keepEmpty ? '(已选择保留)' : '(已过滤)'}</td></tr>
+                    <tr style="background: #fff5e6"><td>⚠️ 被过滤的乱码行</td><td class="warning"><strong>${totalGarbled.toLocaleString()}</strong> 行 ${keepGarbled ? '(已选择保留)' : '(已过滤)'}</td></tr>
+                    ${enableLengthFilter ? `<tr style="background: #fff5e6"><td>✂️ 被过滤的长度不符行（${minLen}~${maxLen}字符）</td><td class="warning"><strong>${totalLengthFiltered.toLocaleString()}</strong> 行</td></tr>` : ''}
+                    <tr><td>✅ 实际提取的关键词数</td><td><strong style="color: #48bb78;">${actualExtracted.toLocaleString()}</strong> 条</td></tr>
+                    <tr><td>📉 提取率</td><td><strong>${expectedAfterSkip > 0 ? ((actualExtracted / expectedAfterSkip) * 100).toFixed(2) : 0}%</strong></td></tr>
+                    ${errorFiles.length > 0 ? `<tr style="background: #fee2e2"><td>⚠️ 解析失败的文件</td><td class="warning">${errorFiles.length} 个</td></tr>` : ''}
                 </tbody></table>
                 <div style="margin-top: 15px; padding: 10px; background: #eef2fa; border-radius: 8px;">
                     <strong>💡 核对说明：</strong><br>
@@ -1497,7 +1497,7 @@
                     实际提取 = 应得行数 - 空值行 - 乱码行 ${enableLengthFilter ? '- 长度不符行' : ''}<br>
                     ${enableLengthFilter ? `<span style="color: #f59e0b;">✂️ 当前长度筛选范围：${minLen} ~ ${maxLen} 个字符</span><br>` : ''}
                 </div>`;
-                let detailHtml = '<tr><thead><tr><th>文件名</th><th>计划</th><th>单元</th><th>总行数</th><th>跳过</th><th>空值</th><th>乱码</th><th>长度过滤</th><th>提取</th></tr></thead><tbody>';
+                let detailHtml = '<table><thead><tr><th>文件名</th><th>计划</th><th>单元</th><th>总行数</th><th>跳过</th><th>空值</th><th>乱码</th><th>长度过滤</th><th>提取</th></tr></thead><tbody>';
                 for (const stat of fileStats) {
                     detailHtml += `<tr>
                         <td>${escapeHtml(stat.fileName)}</td>
