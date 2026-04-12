@@ -1402,11 +1402,11 @@
             
             // ==================== 核心修改：高频需求合并的单元列提取逻辑 ====================
             function extractUnitFromFilename(filename) {
-                // 疑问词和长尾词工具保持原有逻辑（不做任何改动）
-                if (toolType !== 'highfreq') {
+                // 疑问词工具保持原有逻辑
+                if (toolType === 'question') {
                     let unit = "";
                     let name = filename.replace('.csv', '');
-                    if (toolType === 'question' && name.includes(' ')) {
+                    if (name.includes(' ')) {
                         const parts = name.split(' ');
                         if (parts.length > 1) {
                             unit = parts.slice(1).join(' ').trim();
@@ -1434,6 +1434,44 @@
                         }
                     }
                     return unit || filename.replace('.csv', '').slice(0, 4);
+                }
+                
+                // 长尾词工具特殊处理：去掉"--长尾词"，只保留前面部分
+                if (toolType === 'longtail') {
+                    let name = filename.replace('.csv', '');
+                    // 查找"--长尾词"的位置
+                    const longtailIndex = name.indexOf('--长尾词');
+                    if (longtailIndex !== -1) {
+                        // 只保留"--长尾词"前面的部分
+                        let unit = name.substring(0, longtailIndex).trim();
+                        // 去掉可能的特殊字符"--"
+                        unit = unit.replace(/--$/, '').trim();
+                        return unit || filename.replace('.csv', '').slice(0, 4);
+                    }
+                    // 如果没有"--长尾词"，使用原有逻辑
+                    else if (name.includes('-')) {
+                        const parts = name.split('-');
+                        if (parts.length > 2) {
+                            unit = parts[1].trim();
+                        } else if (parts.length === 2) {
+                            let unitPart = parts[1].trim();
+                            unitPart = unitPart.replace(/[0-9_.\s]+/g, '');
+                            const commonSuffixes = ['高频词', '相关词', '列表', '关键词'];
+                            for (const suffix of commonSuffixes) {
+                                if (unitPart.endsWith(suffix)) {
+                                    unitPart = unitPart.slice(0, -suffix.length);
+                                }
+                            }
+                            if (unitPart.includes('旅游') && unitPart.length > 2) {
+                                unit = '旅游';
+                            } else if (unitPart.length > 4) {
+                                unit = unitPart.slice(0, 2).trim();
+                            } else {
+                                unit = unitPart.trim();
+                            }
+                        }
+                        return unit || filename.replace('.csv', '').slice(0, 4);
+                    }
                 }
                 
                 // ========== 高频需求工具的智能单元提取逻辑 ==========
