@@ -619,7 +619,7 @@
                         </div>
                         <div class="tool-card question" onclick="window.showTool('question')">
                             <span class="tool-icon">❓</span>
-                            <h3>需求图谱/高频词提取/疑问词提取</h3>
+                            <h3>高频词提取/疑问词提取</h3>
                             <p>合并疑问词相关CSV文件，支持黑词过滤和双版本下载</p>
                             <ul class="tool-features">
                                 <li>疑问词智能识别</li>
@@ -713,7 +713,7 @@
         function getLegacyToolHTML(toolType) {
             const configs = {
                 highfreq: { title: '📁 高频需求文件夹 CSV 合并工具', subtitle: '输出格式：计划 | 单元 | 关键词 | 支持长度筛选', color: '#667eea', gradient: 'linear-gradient(90deg, #667eea, #764ba2)' },
-                question: { title: '❓ 需求图谱/高频词提取/疑问词提取文件夹 CSV 合并工具', subtitle: '输出格式：计划 | 单元 | 关键词 | 支持批量处理', color: '#11998e', gradient: 'linear-gradient(90deg, #11998e, #38ef7d)' },
+                question: { title: '❓ 高频词提取/疑问词提取文件夹 CSV 合并工具', subtitle: '输出格式：计划 | 单元 | 关键词 | 支持批量处理', color: '#11998e', gradient: 'linear-gradient(90deg, #11998e, #38ef7d)' },
                 longtail: { title: '🎯 长尾词文件夹 CSV 合并工具', subtitle: '输出格式：计划 | 单元 | 关键词 | 大规模数据处理', color: '#f5576c', gradient: 'linear-gradient(90deg, #f093fb, #f5576c)' }
             };
             const cfg = configs[toolType];
