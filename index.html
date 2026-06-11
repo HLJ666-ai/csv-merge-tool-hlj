@@ -639,16 +639,34 @@
                         </div>
                     </div>
                     <div class="cards-row">
-                        <div class="tool-card blackfilter" style="grid-column: span 3;" onclick="window.showTool('blackfilter')">
+                        <div class="tool-card blackfilter" onclick="window.showTool('blackfilter')">
                             <span class="tool-icon">🛡️</span>
-                            <h3>黑词筛选器（独立工具 · 支持20W+数据）</h3>
-                            <p>针对单个文件的关键词列进行黑词过滤。支持多黑词表，分批处理不卡顿，保留原始文件所有列。</p>
+                            <h3>黑词筛选器</h3>
+                            <p>针对单个文件的关键词列进行黑词过滤，支持多黑词表，保留原始文件所有列</p>
                             <ul class="tool-features">
-                                <li>📄 上传原始Excel/CSV文件（保留所有列）</li>
-                                <li>📚 上传一个或多个黑词表（Excel/CSV）</li>
-                                <li>🔍 预览原始数据 & 黑词表</li>
-                                <li>⚡ 分批异步处理，界面不卡顿 + 实时进度条</li>
-                                <li>✅ 过滤黑词，展示被过滤内容，下载保留原始格式的CSV</li>
+                                <li>📄 上传Excel/CSV文件</li>
+                                <li>📚 多黑词表导入</li>
+                                <li>⚡ 分批异步处理（支持20W+）</li>
+                            </ul>
+                        </div>
+                        <div class="tool-card numbering" onclick="window.showTool('numbering')">
+                            <span class="tool-icon">🔢</span>
+                            <h3>单元列编号工具</h3>
+                            <p>根据单元列内容进行独立分组编号，超过5000行自动拆分编号</p>
+                            <ul class="tool-features">
+                                <li>📄 上传Excel/CSV文件</li>
+                                <li>🔍 自动识别单元/关键词列</li>
+                                <li>⚡ 分批异步处理（支持20W+）</li>
+                            </ul>
+                        </div>
+                        <div class="tool-card filemerge" onclick="window.showTool('filemerge')">
+                            <span class="tool-icon">📁</span>
+                            <h3>多文件合并工具</h3>
+                            <p>按选择顺序合并多个CSV/Excel文件，智能匹配相同列名，仅保留一个表头</p>
+                            <ul class="tool-features">
+                                <li>📄 多选CSV/Excel文件</li>
+                                <li>🔄 自定义合并顺序</li>
+                                <li>⚡ 分批异步处理（支持20W+）</li>
                             </ul>
                         </div>
                     </div>
@@ -671,7 +689,7 @@
 
     <script>
         // ======================== 全局路由 ========================
-        let toolInstances = { highfreq: null, question: null, longtail: null, blackfilter: null };
+        let toolInstances = { highfreq: null, question: null, longtail: null, blackfilter: null, numbering: null, filemerge: null };
         
         window.showTool = function(toolType) {
             const homeView = document.getElementById('homeView');
@@ -684,6 +702,10 @@
             if (!toolInstances[toolType]) {
                 if (toolType === 'blackfilter') {
                     toolInstances[toolType] = getBlackFilterHTML();
+                } else if (toolType === 'numbering') {
+                    toolInstances[toolType] = getNumberingToolHTML();
+                } else if (toolType === 'filemerge') {
+                    toolInstances[toolType] = getFileMergeHTML();
                 } else {
                     toolInstances[toolType] = getLegacyToolHTML(toolType);
                 }
@@ -691,6 +713,10 @@
                 
                 if (toolType === 'blackfilter') {
                     initBlackFilterOptimized();
+                } else if (toolType === 'numbering') {
+                    initNumberingTool();
+                } else if (toolType === 'filemerge') {
+                    initFileMergeTool();
                 } else {
                     initLegacyTool(toolType);
                 }
@@ -698,6 +724,10 @@
                 toolContent.innerHTML = toolInstances[toolType];
                 if (toolType === 'blackfilter') {
                     initBlackFilterOptimized();
+                } else if (toolType === 'numbering') {
+                    initNumberingTool();
+                } else if (toolType === 'filemerge') {
+                    initFileMergeTool();
                 } else {
                     initLegacyTool(toolType);
                 }
@@ -884,6 +914,103 @@
                     <h4>📋 被过滤的关键词明细（最多显示500条）</h4>
                     <div id="filteredItemsList" class="filter-result-list"></div>
                     <div id="filterSummary" style="background:#f7fafc; padding:12px; border-radius:12px;"></div>
+                </div>
+            `;
+        }
+        
+        // ======================== 第五工具：单元列编号工具 ========================
+        function getNumberingToolHTML() {
+            return `
+                <div style="margin-bottom:20px; background:linear-gradient(135deg, #4ECDC410 0%, #45B7D120 100%); border-left:5px solid #4ECDC4; border-radius:16px; padding:20px;">
+                    <h2 style="color:#4ECDC4;">🔢 单元列编号工具</h2>
+                    <p style="color:#4a5568;">根据单元列内容进行独立分组编号，每个单元内容各自独立从_1开始计数。超过5000行自动拆分编号（如苹果_1、苹果_2...）。</p>
+                    <p style="color:#4a5568; font-size:13px; margin-top:8px;">✅ 在关键词列后插入编号列 | ⚡ 分批异步处理 | 支持20万+数据</p>
+                </div>
+                <div class="filter-tool-container">
+                    <div class="upload-box">
+                        <div id="numberingOriginDropZone" class="simple-drop-zone">
+                            <div style="font-size: 40px;">📄</div>
+                            <div>点击或拖拽上传Excel/CSV文件</div>
+                            <div style="font-size:12px; color:#718096;">支持 .xlsx, .xls, .csv (GBK编码)</div>
+                        </div>
+                        <div id="numberingPreviewArea" class="preview-area" style="display:none;"></div>
+                        <div class="clear-buttons-group">
+                            <button id="numberingClearBtn" class="btn-clear-origin" style="display:none;">🗑️ 清除文件</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="numberingPerformanceWarning" class="performance-warning" style="display:none;">
+                    ⚠️ 数据量较大（超过5万条），处理过程可能需要10-30秒，请耐心等待。处理期间界面不会卡死。
+                </div>
+                <div id="numberingProgressContainer" class="filter-progress-container">
+                    <div class="filter-progress-bar">
+                        <div id="numberingProgressFill" class="filter-progress-fill"></div>
+                    </div>
+                    <div id="numberingProgressText" class="filter-progress-text">准备就绪...</div>
+                </div>
+                <div class="button-group" style="justify-content:center; gap:20px;">
+                    <button id="numberingStartBtn" disabled style="background:#4ECDC4;">🔢 开始编号</button>
+                    <button id="numberingClearAllBtn" class="btn-secondary">🗑️ 清空数据</button>
+                    <button id="numberingDownloadBtn" disabled style="background:#22C55E;">💾 下载带编号的CSV</button>
+                </div>
+                <div id="numberingStatus" class="status" style="display:none;"></div>
+                <div id="numberingResultArea" style="margin-top:20px; display:none;">
+                    <h4>📋 编号统计</h4>
+                    <div id="numberingSummary" style="background:#f7fafc; padding:12px; border-radius:12px;"></div>
+                    <div style="margin-top:15px;">
+                        <strong>📊 部分编号预览（前10条）：</strong>
+                        <div id="numberingPreviewTable" class="preview-area"></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // ======================== 第六工具：多文件合并工具 ========================
+        function getFileMergeHTML() {
+            return `
+                <div style="margin-bottom:20px; background:linear-gradient(135deg, #A855F710 0%, #6366F120 100%); border-left:5px solid #A855F7; border-radius:16px; padding:20px;">
+                    <h2 style="color:#A855F7;">📁 多文件合并工具</h2>
+                    <p style="color:#4a5568;">按选择顺序合并多个CSV/Excel文件，智能匹配相同列名，仅保留一个表头行。</p>
+                    <p style="color:#4a5568; font-size:13px; margin-top:8px;">✅ 保留所有列 | ⚡ 分批异步处理 | 支持20万+数据</p>
+                </div>
+                <div class="filter-tool-container">
+                    <div class="upload-box" style="flex:1; min-width:260px;">
+                        <div id="filemergeDropZone" class="simple-drop-zone">
+                            <div style="font-size: 40px;">📂</div>
+                            <div>点击或拖拽上传多个CSV/Excel文件</div>
+                            <div style="font-size:12px; color:#718096;">支持 .xlsx, .xls, .csv，按上传顺序合并</div>
+                        </div>
+                        <div id="filemergeFileList" style="margin-top:15px; display:none;">
+                            <strong>📋 已选择的文件（拖拽调整顺序）：</strong>
+                            <div id="filemergeFilesContainer" style="margin-top:10px; max-height:200px; overflow-y:auto;"></div>
+                        </div>
+                        <div class="clear-buttons-group">
+                            <button id="filemergeClearBtn" class="btn-clear-origin" style="display:none;">🗑️ 清除文件</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="filemergePerformanceWarning" class="performance-warning" style="display:none;">
+                    ⚠️ 数据量较大（超过5万条），处理过程可能需要10-30秒，请耐心等待。处理期间界面不会卡死。
+                </div>
+                <div id="filemergeProgressContainer" class="filter-progress-container">
+                    <div class="filter-progress-bar">
+                        <div id="filemergeProgressFill" class="filter-progress-fill"></div>
+                    </div>
+                    <div id="filemergeProgressText" class="filter-progress-text">准备就绪...</div>
+                </div>
+                <div class="button-group" style="justify-content:center; gap:20px;">
+                    <button id="filemergeStartBtn" disabled style="background:#A855F7;">🔄 开始合并</button>
+                    <button id="filemergeClearAllBtn" class="btn-secondary">🗑️ 清空数据</button>
+                    <button id="filemergeDownloadBtn" disabled style="background:#22C55E;">💾 下载合并后的CSV</button>
+                </div>
+                <div id="filemergeStatus" class="status" style="display:none;"></div>
+                <div id="filemergeResultArea" style="margin-top:20px; display:none;">
+                    <h4>📋 合并统计</h4>
+                    <div id="filemergeSummary" style="background:#f7fafc; padding:12px; border-radius:12px;"></div>
+                    <div style="margin-top:15px;">
+                        <strong>📊 合并结果预览（前10条）：</strong>
+                        <div id="filemergePreviewTable" class="preview-area"></div>
+                    </div>
                 </div>
             `;
         }
@@ -1314,6 +1441,719 @@
             if (clearBlacklistOnlyBtn) clearBlacklistOnlyBtn.addEventListener('click', clearBlacklistOnly);
             if (downloadBtn) downloadBtn.addEventListener('click', downloadFiltered);
             if (downloadFilteredOnlyBtn) downloadFilteredOnlyBtn.addEventListener('click', downloadFilteredOnly);
+        }
+        
+        // ======================== 单元列编号工具初始化 ========================
+        function initNumberingTool() {
+            let originData = [];
+            let originHeader = [];
+            let resultData = [];
+            let originFileName = "";
+            let unitColIndex = -1;
+            let keywordColIndex = -1;
+            let isProcessing = false;
+            
+            const originDrop = document.getElementById('numberingOriginDropZone');
+            const startBtn = document.getElementById('numberingStartBtn');
+            const clearAllBtn = document.getElementById('numberingClearAllBtn');
+            const clearBtn = document.getElementById('numberingClearBtn');
+            const downloadBtn = document.getElementById('numberingDownloadBtn');
+            const statusDiv = document.getElementById('numberingStatus');
+            const resultArea = document.getElementById('numberingResultArea');
+            const summaryDiv = document.getElementById('numberingSummary');
+            const previewDiv = document.getElementById('numberingPreviewTable');
+            const previewArea = document.getElementById('numberingPreviewArea');
+            const progressContainer = document.getElementById('numberingProgressContainer');
+            const progressFill = document.getElementById('numberingProgressFill');
+            const progressText = document.getElementById('numberingProgressText');
+            const performanceWarning = document.getElementById('numberingPerformanceWarning');
+            
+            let fileLoaded = false;
+            
+            function showMsg(msg, type = '') {
+                statusDiv.style.display = 'block';
+                statusDiv.textContent = msg;
+                statusDiv.className = 'status ' + type;
+                setTimeout(() => { if(statusDiv) statusDiv.style.display = 'none'; }, 4000);
+            }
+            
+            async function parseFileToRows(file) {
+                return new Promise((resolve, reject) => {
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    if (ext === 'csv') {
+                        Papa.parse(file, { header: false, encoding: 'gbk', skipEmptyLines: true, complete: (res) => resolve(res.data), error: reject });
+                    } else {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+                            resolve(rows);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsArrayBuffer(file);
+                    }
+                });
+            }
+            
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str).replace(/[&<>]/g, function(m){
+                    if(m==='&') return '&amp;';
+                    if(m==='<') return '&lt;';
+                    if(m==='>') return '&gt;';
+                    return m;
+                });
+            }
+            
+            async function handleOrigin(file) {
+                try {
+                    showMsg('正在解析文件...', '');
+                    const rows = await parseFileToRows(file);
+                    if (!rows || rows.length < 2) throw new Error("文件内容不足");
+                    
+                    originHeader = rows[0] ? [...rows[0]] : [];
+                    
+                    // 自动识别单元列和关键词列
+                    let unitCol = -1, keyCol = -1;
+                    if (originHeader && originHeader.length) {
+                        for (let i = 0; i < originHeader.length; i++) {
+                            const header = String(originHeader[i] || '').toLowerCase();
+                            if (unitCol === -1 && header.includes('单元')) {
+                                unitCol = i;
+                            }
+                            if (keyCol === -1 && header.includes('关键词')) {
+                                keyCol = i;
+                            }
+                            if (unitCol !== -1 && keyCol !== -1) break;
+                        }
+                    }
+                    
+                    // 如果没找到单元列，默认使用第2列(B列)
+                    if (unitCol === -1) unitCol = 1;
+                    // 如果没找到关键词列，默认使用第3列(C列)
+                    if (keyCol === -1) keyCol = 2;
+                    
+                    unitColIndex = unitCol;
+                    keywordColIndex = keyCol;
+                    
+                    originData = [];
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        if (row && row.length > 0) {
+                            const unitVal = row[unitColIndex] ? String(row[unitColIndex]).trim() : "";
+                            originData.push({ unit: unitVal, fullRow: [...row] });
+                        }
+                    }
+                    originFileName = file.name;
+                    
+                    if (originData.length > 50000) {
+                        performanceWarning.style.display = 'block';
+                    } else {
+                        performanceWarning.style.display = 'none';
+                    }
+                    
+                    // 显示预览
+                    let previewHtml = '<table class="preview-table"><thead><tr>';
+                    for (let i = 0; i < Math.min(6, originHeader.length); i++) {
+                        let style = '';
+                        if (i === unitColIndex) style = 'background:#e0f2fe;';
+                        if (i === keywordColIndex) style = 'background:#fff0f0;';
+                        previewHtml += `<th style="${style}">${escapeHtml(String(originHeader[i] || ''))}${i === unitColIndex ? '(单元列)' : ''}${i === keywordColIndex ? '(关键词列)' : ''}</th>`;
+                    }
+                    previewHtml += '</tr></thead><tbody>';
+                    for (let i = 0; i < Math.min(12, originData.length); i++) {
+                        const row = originData[i].fullRow;
+                        previewHtml += '<tr>';
+                        for (let j = 0; j < Math.min(6, row.length); j++) {
+                            let cell = row[j] || '';
+                            let style = '';
+                            if (j === unitColIndex) style = 'background:#e0f2fe;';
+                            if (j === keywordColIndex) style = 'background:#fff0f0;';
+                            previewHtml += `<td style="${style}">${escapeHtml(String(cell).substring(0, 40))}</td>`;
+                        }
+                        previewHtml += '</tr>';
+                    }
+                    previewHtml += '</tbody></table>';
+                    previewArea.innerHTML = `<strong>📄 文件预览（共 ${originData.length.toLocaleString()} 行数据）</strong><br>${previewHtml}`;
+                    previewArea.style.display = 'block';
+                    fileLoaded = true;
+                    
+                    if (clearBtn) clearBtn.style.display = 'inline-block';
+                    if (startBtn) startBtn.disabled = false;
+                    showMsg(`文件加载成功，已识别单元列(第${unitColIndex+1}列)和关键词列(第${keywordColIndex+1}列)`, 'success');
+                } catch(e) { 
+                    showMsg(`解析失败: ${e.message}`, 'error'); 
+                    fileLoaded = false; 
+                    if (clearBtn) clearBtn.style.display = 'none';
+                    if (startBtn) startBtn.disabled = true;
+                }
+            }
+            
+            function clearAll() {
+                if (isProcessing) {
+                    showMsg('请等待当前处理完成', 'error');
+                    return;
+                }
+                originData = [];
+                originHeader = [];
+                resultData = [];
+                originFileName = "";
+                fileLoaded = false;
+                previewArea.style.display = 'none';
+                previewArea.innerHTML = '';
+                previewDiv.innerHTML = '';
+                resultArea.style.display = 'none';
+                performanceWarning.style.display = 'none';
+                if (startBtn) startBtn.disabled = true;
+                if (downloadBtn) downloadBtn.disabled = true;
+                if (clearBtn) clearBtn.style.display = 'none';
+                showMsg("已清空所有数据", 'success');
+            }
+            
+            async function performNumberingAsync() {
+                if (isProcessing) {
+                    showMsg('正在处理中，请稍候...', 'error');
+                    return;
+                }
+                if (!originData.length) { 
+                    showMsg("请先加载文件",'error'); 
+                    return; 
+                }
+                
+                isProcessing = true;
+                if (startBtn) startBtn.disabled = true;
+                progressContainer.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.innerHTML = '准备处理...';
+                
+                // 第一步：统计每个单元内容出现的总次数
+                const unitCountMap = new Map();
+                for (let item of originData) {
+                    const unit = item.unit;
+                    if (unit) {
+                        unitCountMap.set(unit, (unitCountMap.get(unit) || 0) + 1);
+                    }
+                }
+                
+                // 第二步：分批异步处理编号
+                const totalCount = originData.length;
+                const BATCH_SIZE = 5000;
+                let processedCount = 0;
+                
+                // 准备结果数据，插入编号列
+                const newHeader = [...originHeader];
+                // 在关键词列后插入编号列
+                newHeader.splice(keywordColIndex + 1, 0, '编号');
+                
+                const newData = [];
+                
+                // 记录每个单元当前的行序号
+                const unitRowNumMap = new Map();
+                
+                function processBatch(startIndex) {
+                    return new Promise((resolve) => {
+                        const endIndex = Math.min(startIndex + BATCH_SIZE, totalCount);
+                        const batch = originData.slice(startIndex, endIndex);
+                        
+                        for (let item of batch) {
+                            const unit = item.unit;
+                            const row = [...item.fullRow];
+                            
+                            // 该单元累计行数+1（独立计数）
+                            const currentRowNum = (unitRowNumMap.get(unit) || 0) + 1;
+                            unitRowNumMap.set(unit, currentRowNum);
+                            
+                            // 生成编号
+                            let numbering = '';
+                            if (unit) {
+                                const total = unitCountMap.get(unit) || 1;
+                                if (total > 5000) {
+                                    const groupNum = Math.floor((currentRowNum - 1) / 5000) + 1;
+                                    numbering = `${unit}_${groupNum}`;
+                                } else {
+                                    numbering = `${unit}_1`;
+                                }
+                            }
+                            
+                            // 在关键词列后插入编号
+                            row.splice(keywordColIndex + 1, 0, numbering);
+                            newData.push(row);
+                        }
+                        
+                        processedCount = endIndex;
+                        const percent = Math.round((processedCount / totalCount) * 100);
+                        progressFill.style.width = `${percent}%`;
+                        progressText.innerHTML = `处理中: ${processedCount.toLocaleString()} / ${totalCount.toLocaleString()} (${percent}%)`;
+                        
+                        if (processedCount < totalCount) {
+                            setTimeout(() => resolve(processBatch(processedCount)), 10);
+                        } else {
+                            resolve({ header: newHeader, data: newData });
+                        }
+                    });
+                }
+                
+                try {
+                    const result = await processBatch(0);
+                    resultData = result.data;
+                    
+                    progressFill.style.width = '100%';
+                    progressText.innerHTML = `处理完成！`;
+                    
+                    // 统计信息
+                    const uniqueUnits = unitCountMap.size;
+                    let maxGroup = 0;
+                    for (let [unit, count] of unitCountMap) {
+                        const groups = Math.ceil(count / 5000);
+                        if (groups > maxGroup) maxGroup = groups;
+                    }
+                    
+                    summaryDiv.innerHTML = `
+                        <strong>📊 编号统计</strong><br>
+                        总行数: <strong>${originData.length.toLocaleString()}</strong> 行<br>
+                        独立单元数: <strong>${uniqueUnits.toLocaleString()}</strong> 个<br>
+                        最大分组数: <strong>${maxGroup}</strong> 组（超过5000行自动拆分）<br>
+                        编号示例: <strong>苹果_1</strong>、<strong>苹果_2</strong>、<strong>香蕉_1</strong>...
+                    `;
+                    
+                    // 预览前10条
+                    let previewHtml = '<table class="preview-table"><thead><tr>';
+                    for (let i = 0; i < Math.min(7, result.header.length); i++) {
+                        let style = '';
+                        if (i === keywordColIndex + 1) style = 'background:#dcfce7;';
+                        previewHtml += `<th style="${style}">${escapeHtml(String(result.header[i] || ''))}${i === keywordColIndex + 1 ? '(新增)' : ''}</th>`;
+                    }
+                    previewHtml += '</tr></thead><tbody>';
+                    for (let i = 0; i < Math.min(10, result.data.length); i++) {
+                        const row = result.data[i];
+                        previewHtml += '<tr>';
+                        for (let j = 0; j < Math.min(7, row.length); j++) {
+                            let cell = row[j] || '';
+                            let style = '';
+                            if (j === keywordColIndex + 1) style = 'background:#dcfce7; font-weight:bold;';
+                            previewHtml += `<td style="${style}">${escapeHtml(String(cell).substring(0, 40))}</td>`;
+                        }
+                        previewHtml += '</tr>';
+                    }
+                    previewHtml += '</tbody></table>';
+                    previewDiv.innerHTML = previewHtml;
+                    
+                    resultArea.style.display = 'block';
+                    if (downloadBtn) downloadBtn.disabled = false;
+                    showMsg(`编号完成！共处理 ${originData.length.toLocaleString()} 行数据`, 'success');
+                    
+                } catch (error) {
+                    showMsg(`处理出错: ${error.message}`, 'error');
+                } finally {
+                    isProcessing = false;
+                    setTimeout(() => {
+                        if (progressContainer) progressContainer.style.display = 'none';
+                    }, 2000);
+                }
+            }
+            
+            function downloadResult() {
+                if(resultData.length === 0) { 
+                    showMsg("没有数据可下载",'error'); 
+                    return; 
+                }
+                
+                let csvRows = [];
+                // 添加表头
+                csvRows.push(originHeader.map((cell, idx) => {
+                    if (idx === keywordColIndex) {
+                        return `"${String(cell || '').replace(/"/g, '""')}","编号"`;
+                    }
+                    return `"${String(cell || '').replace(/"/g, '""')}"`;
+                }).join(','));
+                
+                // 添加数据行
+                for (let i = 0; i < resultData.length; i++) {
+                    const row = resultData[i];
+                    const escapedRow = row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',');
+                    csvRows.push(escapedRow);
+                }
+                
+                const csvContent = csvRows.join('\n');
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.download = `${originFileName.replace(/\.[^/.]+$/, '')}_带编号.csv`;
+                link.click();
+                URL.revokeObjectURL(url);
+                showMsg(`已下载 ${resultData.length.toLocaleString()} 条数据（含编号列）`, 'success');
+            }
+            
+            originDrop.addEventListener('click', () => { 
+                let inp = document.createElement('input'); 
+                inp.type='file'; 
+                inp.accept='.xlsx,.xls,.csv'; 
+                inp.onchange=e=>{ if(inp.files[0]) handleOrigin(inp.files[0]); }; 
+                inp.click(); 
+            });
+            originDrop.addEventListener('dragover', e=>{ e.preventDefault(); originDrop.classList.add('drag-over'); });
+            originDrop.addEventListener('dragleave', ()=> originDrop.classList.remove('drag-over'));
+            originDrop.addEventListener('drop', e=>{ e.preventDefault(); originDrop.classList.remove('drag-over'); if(e.dataTransfer.files.length) handleOrigin(e.dataTransfer.files[0]); });
+            
+            if (startBtn) startBtn.addEventListener('click', performNumberingAsync);
+            if (clearAllBtn) clearAllBtn.addEventListener('click', clearAll);
+            if (clearBtn) clearBtn.addEventListener('click', clearAll);
+            if (downloadBtn) downloadBtn.addEventListener('click', downloadResult);
+        }
+        
+        // ======================== 多文件合并工具初始化 ========================
+        function initFileMergeTool() {
+            let filesData = [];
+            let mergedHeader = [];
+            let mergedData = [];
+            let isProcessing = false;
+            let fileOrder = [];
+            
+            const dropZone = document.getElementById('filemergeDropZone');
+            const fileListContainer = document.getElementById('filemergeFilesContainer');
+            const fileListDiv = document.getElementById('filemergeFileList');
+            const startBtn = document.getElementById('filemergeStartBtn');
+            const clearAllBtn = document.getElementById('filemergeClearAllBtn');
+            const clearBtn = document.getElementById('filemergeClearBtn');
+            const downloadBtn = document.getElementById('filemergeDownloadBtn');
+            const statusDiv = document.getElementById('filemergeStatus');
+            const resultArea = document.getElementById('filemergeResultArea');
+            const summaryDiv = document.getElementById('filemergeSummary');
+            const previewDiv = document.getElementById('filemergePreviewTable');
+            const progressContainer = document.getElementById('filemergeProgressContainer');
+            const progressFill = document.getElementById('filemergeProgressFill');
+            const progressText = document.getElementById('filemergeProgressText');
+            const performanceWarning = document.getElementById('filemergePerformanceWarning');
+            
+            function showMsg(msg, type = '') {
+                statusDiv.style.display = 'block';
+                statusDiv.textContent = msg;
+                statusDiv.className = 'status ' + type;
+                setTimeout(() => { if(statusDiv) statusDiv.style.display = 'none'; }, 4000);
+            }
+            
+            async function parseFileToRows(file) {
+                return new Promise((resolve, reject) => {
+                    const ext = file.name.split('.').pop().toLowerCase();
+                    if (ext === 'csv') {
+                        Papa.parse(file, { header: false, encoding: 'gbk', skipEmptyLines: true, complete: (res) => resolve(res.data), error: reject });
+                    } else {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const data = new Uint8Array(e.target.result);
+                            const workbook = XLSX.read(data, { type: 'array' });
+                            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+                            resolve(rows);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsArrayBuffer(file);
+                    }
+                });
+            }
+            
+            function escapeHtml(str) {
+                if (!str) return '';
+                return String(str).replace(/[&<>]/g, function(m){
+                    if(m==='&') return '&amp;';
+                    if(m==='<') return '&lt;';
+                    if(m==='>') return '&gt;';
+                    return m;
+                });
+            }
+            
+            async function handleFiles(files) {
+                const fileArr = Array.from(files);
+                
+                for (let file of fileArr) {
+                    // 跳过重复文件
+                    if (fileOrder.find(f => f.name === file.name)) continue;
+                    
+                    try {
+                        showMsg(`正在解析文件: ${file.name}`, '');
+                        const rows = await parseFileToRows(file);
+                        if (!rows || rows.length < 2) {
+                            showMsg(`文件 ${file.name} 内容不足，已跳过`, 'error');
+                            continue;
+                        }
+                        
+                        const header = rows[0] ? [...rows[0]] : [];
+                        const data = [];
+                        for (let i = 1; i < rows.length; i++) {
+                            if (rows[i] && rows[i].length > 0) {
+                                data.push([...rows[i]]);
+                            }
+                        }
+                        
+                        fileOrder.push({ name: file.name, size: file.size });
+                        filesData.push({ name: file.name, header: header, data: data, rowCount: data.length });
+                    } catch(e) { 
+                        showMsg(`文件 ${file.name} 解析失败: ${e.message}`, 'error'); 
+                    }
+                }
+                
+                updateFileList();
+                
+                if (filesData.length > 0) {
+                    fileListDiv.style.display = 'block';
+                    if (clearBtn) clearBtn.style.display = 'inline-block';
+                    if (startBtn) startBtn.disabled = false;
+                    showMsg(`已加载 ${filesData.length} 个文件`, 'success');
+                }
+            }
+            
+            function updateFileList() {
+                let html = '';
+                fileOrder.forEach((file, index) => {
+                    html += `
+                        <div style="display:flex; align-items:center; padding:8px 12px; background:#f8fafc; border-radius:8px; margin-bottom:6px; cursor:move;" 
+                             draggable="true" data-index="${index}" 
+                             ondragstart="event.dataTransfer.setData('text/plain', ${index})"
+                             ondragenter="event.preventDefault()"
+                             ondragover="event.preventDefault()"
+                             ondrop="handleFileDrop(event)"
+                             title="点击删除，拖拽调整顺序">
+                            <span style="margin-right:10px; color:#666;">${index + 1}.</span>
+                            <span style="flex:1; word-break:break-all;">${escapeHtml(file.name)}</span>
+                            <span style="margin-left:10px; color:#999; font-size:12px;">(${formatFileSize(file.size)})</span>
+                            <button style="margin-left:10px; padding:4px 8px; background:#fee2e2; border:none; border-radius:4px; color:#991b1b; cursor:pointer; font-size:12px;"
+                                    onclick="removeFile(${index});">×</button>
+                        </div>
+                    `;
+                });
+                fileListContainer.innerHTML = html;
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 B';
+                const k = 1024;
+                const sizes = ['B', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            window.removeFile = function(index) {
+                fileOrder.splice(index, 1);
+                filesData.splice(index, 1);
+                updateFileList();
+                
+                if (filesData.length === 0) {
+                    fileListDiv.style.display = 'none';
+                    if (clearBtn) clearBtn.style.display = 'none';
+                    if (startBtn) startBtn.disabled = true;
+                    if (downloadBtn) downloadBtn.disabled = true;
+                    resultArea.style.display = 'none';
+                }
+                showMsg('已移除文件', 'success');
+            };
+            
+            window.handleFileDrop = function(event) {
+                const draggedIndex = parseInt(event.dataTransfer.getData('text/plain'));
+                const dropTarget = event.target.closest('[data-index]');
+                if (!dropTarget) return;
+                
+                const dropIndex = parseInt(dropTarget.getAttribute('data-index'));
+                if (draggedIndex === dropIndex) return;
+                
+                // 调整顺序
+                const draggedFile = fileOrder.splice(draggedIndex, 1)[0];
+                const draggedData = filesData.splice(draggedIndex, 1)[0];
+                
+                fileOrder.splice(dropIndex, 0, draggedFile);
+                filesData.splice(dropIndex, 0, draggedData);
+                
+                updateFileList();
+            };
+            
+            function clearAll() {
+                if (isProcessing) {
+                    showMsg('请等待当前处理完成', 'error');
+                    return;
+                }
+                filesData = [];
+                mergedData = [];
+                mergedHeader = [];
+                fileOrder = [];
+                fileListDiv.style.display = 'none';
+                fileListContainer.innerHTML = '';
+                previewDiv.innerHTML = '';
+                resultArea.style.display = 'none';
+                performanceWarning.style.display = 'none';
+                if (startBtn) startBtn.disabled = true;
+                if (downloadBtn) downloadBtn.disabled = true;
+                if (clearBtn) clearBtn.style.display = 'none';
+                showMsg("已清空所有数据", 'success');
+            }
+            
+            async function performMergeAsync() {
+                if (isProcessing) {
+                    showMsg('正在处理中，请稍候...', 'error');
+                    return;
+                }
+                if (filesData.length === 0) { 
+                    showMsg("请先上传文件",'error'); 
+                    return; 
+                }
+                
+                isProcessing = true;
+                if (startBtn) startBtn.disabled = true;
+                progressContainer.style.display = 'block';
+                progressFill.style.width = '0%';
+                progressText.innerHTML = '准备合并...';
+                
+                // 使用第一个文件的表头作为合并后的表头
+                mergedHeader = [...filesData[0].header];
+                
+                // 分批异步合并数据
+                const totalRows = filesData.reduce((sum, f) => sum + f.data.length, 0);
+                const BATCH_SIZE = 5000;
+                let processedCount = 0;
+                mergedData = [];
+                
+                // 按文件顺序处理
+                let currentFileIndex = 0;
+                let currentRowIndex = 0;
+                
+                function processBatch() {
+                    return new Promise((resolve) => {
+                        if (currentFileIndex >= filesData.length) {
+                            resolve();
+                            return;
+                        }
+                        
+                        const currentFile = filesData[currentFileIndex];
+                        const rowsToProcess = Math.min(BATCH_SIZE, currentFile.data.length - currentRowIndex);
+                        const endRow = currentRowIndex + rowsToProcess;
+                        
+                        for (let i = currentRowIndex; i < endRow; i++) {
+                            mergedData.push([...currentFile.data[i]]);
+                        }
+                        
+                        processedCount += rowsToProcess;
+                        currentRowIndex = endRow;
+                        
+                        if (currentRowIndex >= currentFile.data.length) {
+                            currentFileIndex++;
+                            currentRowIndex = 0;
+                        }
+                        
+                        const percent = Math.round((processedCount / totalRows) * 100);
+                        progressFill.style.width = `${percent}%`;
+                        progressText.innerHTML = `合并中: ${processedCount.toLocaleString()} / ${totalRows.toLocaleString()} (${percent}%)`;
+                        
+                        if (processedCount < totalRows) {
+                            setTimeout(() => resolve(processBatch()), 10);
+                        } else {
+                            resolve();
+                        }
+                    });
+                }
+                
+                try {
+                    await processBatch();
+                    
+                    progressFill.style.width = '100%';
+                    progressText.innerHTML = `合并完成！`;
+                    
+                    if (mergedData.length > 50000) {
+                        performanceWarning.style.display = 'block';
+                    } else {
+                        performanceWarning.style.display = 'none';
+                    }
+                    
+                    // 统计信息
+                    let totalFromEach = '';
+                    filesData.forEach((f, i) => {
+                        totalFromEach += `${i+1}. ${f.name}: ${f.rowCount.toLocaleString()} 行<br>`;
+                    });
+                    
+                    summaryDiv.innerHTML = `
+                        <strong>📊 合并统计</strong><br>
+                        合并文件数: <strong>${filesData.length}</strong> 个<br>
+                        总行数: <strong>${mergedData.length.toLocaleString()}</strong> 行<br>
+                        列数: <strong>${mergedHeader.length}</strong> 列<br>
+                        <br><strong>各文件数据量：</strong><br>${totalFromEach}
+                    `;
+                    
+                    // 预览前10条
+                    let previewHtml = '<table class="preview-table"><thead><tr>';
+                    for (let i = 0; i < Math.min(6, mergedHeader.length); i++) {
+                        previewHtml += `<th>${escapeHtml(String(mergedHeader[i] || ''))}</th>`;
+                    }
+                    previewHtml += '</tr></thead><tbody>';
+                    for (let i = 0; i < Math.min(10, mergedData.length); i++) {
+                        const row = mergedData[i];
+                        previewHtml += '<tr>';
+                        for (let j = 0; j < Math.min(6, row.length); j++) {
+                            let cell = row[j] || '';
+                            previewHtml += `<td>${escapeHtml(String(cell).substring(0, 40))}</td>`;
+                        }
+                        previewHtml += '</tr>';
+                    }
+                    previewHtml += '</tbody></table>';
+                    previewDiv.innerHTML = previewHtml;
+                    
+                    resultArea.style.display = 'block';
+                    if (downloadBtn) downloadBtn.disabled = false;
+                    showMsg(`合并完成！共处理 ${mergedData.length.toLocaleString()} 行数据`, 'success');
+                    
+                } catch (error) {
+                    showMsg(`合并出错: ${error.message}`, 'error');
+                } finally {
+                    isProcessing = false;
+                    setTimeout(() => {
+                        if (progressContainer) progressContainer.style.display = 'none';
+                    }, 2000);
+                }
+            }
+            
+            function downloadResult() {
+                if(mergedData.length === 0) { 
+                    showMsg("没有数据可下载",'error'); 
+                    return; 
+                }
+                
+                let csvRows = [];
+                // 添加表头（只保留一个）
+                csvRows.push(mergedHeader.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(','));
+                
+                // 添加数据行
+                for (let i = 0; i < mergedData.length; i++) {
+                    const row = mergedData[i];
+                    const escapedRow = row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',');
+                    csvRows.push(escapedRow);
+                }
+                
+                const csvContent = csvRows.join('\n');
+                const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                link.href = url;
+                link.download = `合并结果_${filesData.length}个文件.csv`;
+                link.click();
+                URL.revokeObjectURL(url);
+                showMsg(`已下载 ${mergedData.length.toLocaleString()} 条数据`, 'success');
+            }
+            
+            dropZone.addEventListener('click', () => { 
+                let inp = document.createElement('input'); 
+                inp.type='file'; 
+                inp.multiple=true;
+                inp.accept='.xlsx,.xls,.csv'; 
+                inp.onchange=e=>{ if(inp.files.length) handleFiles(inp.files); }; 
+                inp.click(); 
+            });
+            dropZone.addEventListener('dragover', e=>{ e.preventDefault(); dropZone.classList.add('drag-over'); });
+            dropZone.addEventListener('dragleave', ()=> dropZone.classList.remove('drag-over'));
+            dropZone.addEventListener('drop', e=>{ e.preventDefault(); dropZone.classList.remove('drag-over'); if(e.dataTransfer.files.length) handleFiles(e.dataTransfer.files); });
+            
+            if (startBtn) startBtn.addEventListener('click', performMergeAsync);
+            if (clearAllBtn) clearAllBtn.addEventListener('click', clearAll);
+            if (clearBtn) clearBtn.addEventListener('click', clearAll);
+            if (downloadBtn) downloadBtn.addEventListener('click', downloadResult);
         }
         
         // ======================== 原有三个工具的初始化（升级黑词过滤为分批处理） ========================
