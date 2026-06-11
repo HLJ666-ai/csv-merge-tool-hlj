@@ -1066,7 +1066,14 @@
                             const workbook = XLSX.read(data, { type: 'array' });
                             const sheet = workbook.Sheets[workbook.SheetNames[0]];
                             const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-                            resolve(rows);
+                            
+                            // 过滤完全空的行 - 检查是否至少有一个非空值
+                            const filteredRows = rows.filter(row => {
+                                if (!row || row.length === 0) return false;
+                                return row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '');
+                            });
+                            
+                            resolve(filteredRows);
                         };
                         reader.onerror = reject;
                         reader.readAsArrayBuffer(file);
@@ -1489,7 +1496,14 @@
                             const workbook = XLSX.read(data, { type: 'array' });
                             const sheet = workbook.Sheets[workbook.SheetNames[0]];
                             const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-                            resolve(rows);
+                            
+                            // 过滤完全空的行 - 检查是否至少有一个非空值
+                            const filteredRows = rows.filter(row => {
+                                if (!row || row.length === 0) return false;
+                                return row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '');
+                            });
+                            
+                            resolve(filteredRows);
                         };
                         reader.onerror = reject;
                         reader.readAsArrayBuffer(file);
@@ -1642,10 +1656,8 @@
                 const BATCH_SIZE = 5000;
                 let processedCount = 0;
                 
-                // 准备结果数据，插入编号列
+                // 使用原表头，直接替换单元列内容
                 const newHeader = [...originHeader];
-                // 在关键词列后插入编号列
-                newHeader.splice(keywordColIndex + 1, 0, '编号');
                 
                 const newData = [];
                 
@@ -1677,8 +1689,8 @@
                                 }
                             }
                             
-                            // 在关键词列后插入编号
-                            row.splice(keywordColIndex + 1, 0, numbering);
+                            // 直接替换单元列的内容为编号
+                            row[unitColIndex] = numbering;
                             newData.push(row);
                         }
                         
@@ -1715,24 +1727,25 @@
                         总行数: <strong>${originData.length.toLocaleString()}</strong> 行<br>
                         独立单元数: <strong>${uniqueUnits.toLocaleString()}</strong> 个<br>
                         最大分组数: <strong>${maxGroup}</strong> 组（超过5000行自动拆分）<br>
-                        编号示例: <strong>苹果_1</strong>、<strong>苹果_2</strong>、<strong>香蕉_1</strong>...
+                        编号示例: <strong>苹果_1</strong>、<strong>苹果_2</strong>、<strong>香蕉_1</strong>...<br>
+                        <span style="color:#22C55E;">✅ 编号已直接替换到单元列</span>
                     `;
                     
                     // 预览前10条
                     let previewHtml = '<table class="preview-table"><thead><tr>';
-                    for (let i = 0; i < Math.min(7, result.header.length); i++) {
+                    for (let i = 0; i < Math.min(6, result.header.length); i++) {
                         let style = '';
-                        if (i === keywordColIndex + 1) style = 'background:#dcfce7;';
-                        previewHtml += `<th style="${style}">${escapeHtml(String(result.header[i] || ''))}${i === keywordColIndex + 1 ? '(新增)' : ''}</th>`;
+                        if (i === unitColIndex) style = 'background:#dcfce7;';
+                        previewHtml += `<th style="${style}">${escapeHtml(String(result.header[i] || ''))}${i === unitColIndex ? '(已替换)' : ''}</th>`;
                     }
                     previewHtml += '</tr></thead><tbody>';
                     for (let i = 0; i < Math.min(10, result.data.length); i++) {
                         const row = result.data[i];
                         previewHtml += '<tr>';
-                        for (let j = 0; j < Math.min(7, row.length); j++) {
+                        for (let j = 0; j < Math.min(6, row.length); j++) {
                             let cell = row[j] || '';
                             let style = '';
-                            if (j === keywordColIndex + 1) style = 'background:#dcfce7; font-weight:bold;';
+                            if (j === unitColIndex) style = 'background:#dcfce7; font-weight:bold;';
                             previewHtml += `<td style="${style}">${escapeHtml(String(cell).substring(0, 40))}</td>`;
                         }
                         previewHtml += '</tr>';
@@ -1742,7 +1755,7 @@
                     
                     resultArea.style.display = 'block';
                     if (downloadBtn) downloadBtn.disabled = false;
-                    showMsg(`编号完成！共处理 ${originData.length.toLocaleString()} 行数据`, 'success');
+                    showMsg(`编号完成！共处理 ${originData.length.toLocaleString()} 行数据，编号已替换到单元列`, 'success');
                     
                 } catch (error) {
                     showMsg(`处理出错: ${error.message}`, 'error');
@@ -1761,15 +1774,10 @@
                 }
                 
                 let csvRows = [];
-                // 添加表头
-                csvRows.push(originHeader.map((cell, idx) => {
-                    if (idx === keywordColIndex) {
-                        return `"${String(cell || '').replace(/"/g, '""')}","编号"`;
-                    }
-                    return `"${String(cell || '').replace(/"/g, '""')}"`;
-                }).join(','));
+                // 添加表头（直接使用原表头，不新增列）
+                csvRows.push(originHeader.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(','));
                 
-                // 添加数据行
+                // 添加数据行（单元列已被替换为编号）
                 for (let i = 0; i < resultData.length; i++) {
                     const row = resultData[i];
                     const escapedRow = row.map(cell => `"${String(cell || '').replace(/"/g, '""')}"`).join(',');
@@ -1784,7 +1792,7 @@
                 link.download = `${originFileName.replace(/\.[^/.]+$/, '')}_带编号.csv`;
                 link.click();
                 URL.revokeObjectURL(url);
-                showMsg(`已下载 ${resultData.length.toLocaleString()} 条数据（含编号列）`, 'success');
+                showMsg(`已下载 ${resultData.length.toLocaleString()} 条数据（单元列已替换为编号）`, 'success');
             }
             
             originDrop.addEventListener('click', () => { 
@@ -1847,7 +1855,14 @@
                             const workbook = XLSX.read(data, { type: 'array' });
                             const sheet = workbook.Sheets[workbook.SheetNames[0]];
                             const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-                            resolve(rows);
+                            
+                            // 过滤完全空的行 - 检查是否至少有一个非空值
+                            const filteredRows = rows.filter(row => {
+                                if (!row || row.length === 0) return false;
+                                return row.some(cell => cell !== null && cell !== undefined && String(cell).trim() !== '');
+                            });
+                            
+                            resolve(filteredRows);
                         };
                         reader.onerror = reject;
                         reader.readAsArrayBuffer(file);
